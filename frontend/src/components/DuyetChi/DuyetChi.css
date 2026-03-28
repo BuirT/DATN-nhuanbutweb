@@ -1,0 +1,54 @@
+.duyetchi-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.bang-duyet {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: 20px;
+}
+.bang-duyet th {
+  background-color: #ff9800;
+  color: white;
+  padding: 10px;
+} /* Màu cam cho trang Duyệt */
+.bang-duyet td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+.btn-duyet {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.btn-duyet:hover {
+  background-color: #45a049;
+}
+.btn-da-duyet {
+  background-color: #ccc;
+  color: #666;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: not-allowed;
+}
+.badge-cho {
+  background-color: #ffeb3b;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.badge-xong {
+  background-color: #8bc34a;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}

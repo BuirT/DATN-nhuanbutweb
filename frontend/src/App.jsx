@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import TacGia from "./components/TacGia/TacGia";
 import NhuanBut from "./components/NhuanBut/NhuanBut";
+import DuyetChi from "./components/DuyetChi/DuyetChi";
 import "./App.css"; // Gọi file CSS trang trí Menu
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
             <li>
               <Link to="/nhuan-but">Quản lý Nhuận Bút</Link>
             </li>
+            <li>
+              <Link to="/duyet-chi">Lãnh Đạo Duyệt</Link>
+            </li>
           </ul>
         </nav>
 
@@ -29,6 +33,7 @@ function App() {
 
             {/* Khi đường dẫn là "/nhuan-but" thì hiện trang Nhuận Bút */}
             <Route path="/nhuan-but" element={<NhuanBut />} />
+            <Route path="/duyet-chi" element={<DuyetChi />} />
           </Routes>
         </div>
       </div>
