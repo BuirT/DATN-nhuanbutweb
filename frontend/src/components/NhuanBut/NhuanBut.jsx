@@ -86,7 +86,7 @@ function NhuanBut() {
   return (
     <div className="nhuanbut-container">
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#2196F3" : "#000" }}>{isEditing ? "🛠️ Sửa Thông Tin Bài Viết" : "Nhập Nhuận Bút Mới"}</h3>
+        <h3 style={{ color: isEditing ? "#2196F3" : "#ffffff" }}>{isEditing ? "🛠️ Sửa Thông Tin Bài Viết" : "Nhập Nhuận Bút Mới"}</h3>
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="tenBai" value={formData.tenBai} onChange={handleChange} placeholder="Tên bài" required />
           <select name="tacGia" value={formData.tacGia} onChange={handleChange} required>

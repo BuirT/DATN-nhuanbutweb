@@ -1,59 +1,166 @@
+/* --- THONGKE.CSS - DASHBOARD NỘI DUNG HOÀNH TRÁNG --- */
+
 .thongke-container {
-  padding: 20px;
-  font-family: "Segoe UI", sans-serif;
-}
-.card-tong {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-.bang-thongke {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.bang-thongke th {
-  background-color: #4b6cb7;
-  color: white;
-  padding: 12px;
-}
-.bang-thongke td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-.money {
-  font-weight: bold;
-  color: #e91e63;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
+/* Định nghĩa một cái "Card" chuẩn Doanh nghiệp */
+.st-card {
+  background-color: #121827; /* Tông nền thẻ tối */
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* 1. THẺ TỔNG TIỀN - SIÊU RỰC RỠ, SIÊU HOÀNH TRÁNG */
+.card-tong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Dải màu rực rỡ từ Oceanic sang Vibrant Purple */
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 30%, #a855f7 70%, #d946ef 100%);
+
+  border-radius: 12px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden; /* Để chặn hiệu ứng bóng mờ ở trong */
+  box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+}
+
+/* Thêm một hiệu ứng dải màu bóng mờ ẩn bên dưới cho hoành tráng */
+.card-tong::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  animation: rotateGlow 10s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.card-tong h2 {
+  font-size: 18px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 1; /* Nổi trên hiệu ứng bóng */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Con số TỔNG TIỀN to chà bá nổi bật nhất trang */
+.card-tong h1 {
+  font-size: 4rem; /* To gấp đôi cũ */
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Nút Xuất Excel xịn xò */
 .btn-excel {
-  margin-top: 10px;
-  padding: 8px 15px;
-  background-color: #ffffff;
-  color: #764ba2;
-  border: none;
+  margin-top: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 18px;
   border-radius: 20px;
-  font-weight: bold;
   cursor: pointer;
+  font-weight: 700;
   transition: 0.3s;
+  position: relative;
+  z-index: 1;
 }
 .btn-excel:hover {
   transform: scale(1.05);
-  background-color: #eee;
+  background-color: rgba(255, 255, 255, 0.3);
 }
+
+/* 2. KHU VỰC BIỂU ĐỒ - CARD ĐẸP */
+.card-chart {
+  background-color: #121827;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-chart h3 {
+  text-align: center;
+  color: #e2e8f0;
+  margin-bottom: 20px;
+}
+
+/* 3. BỘ LỌC THÁNG NĂM - HIỆN ĐẠI */
 .filter-box {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px;
-  background: #fff;
+  background-color: #1e293b;
   padding: 15px;
   border-radius: 10px;
-  margin-bottom: 20px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.filter-box label {
+  color: #cbd5e1;
+}
+.filter-box select {
+  background-color: #0f172a;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+/* 4. BẢNG DỮ LIỆU - PHONG CÁCH FINTECH SANG TRỌNG */
+.bang-thongke {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.bang-thongke thead th {
+  background-color: #1e293b;
+  color: #00f2fe; /* Màu nhấn của logo */
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 15px;
+}
+
+.bang-thongke tbody td {
+  background-color: #121827;
+  color: #cbd5e1;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Highlight tiền đỏ rực nổi bật trên nền tối */
+.bang-thongke td.money {
+  color: #f87171;
+  font-weight: 700;
+  font-size: 16px;
 }

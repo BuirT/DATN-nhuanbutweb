@@ -1,54 +1,90 @@
+/* --- DUYETCHI.CSS - GIAO DIỆN LÃNH ĐẠO --- */
 .duyetchi-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+  padding: 10px;
 }
+
 .bang-duyet {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  margin-top: 20px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #121827;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-.bang-duyet th {
-  background-color: #ff9800;
-  color: white;
-  padding: 10px;
-} /* Màu cam cho trang Duyệt */
-.bang-duyet td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+
+.bang-duyet thead th {
+  background-color: #0f172a;
+  color: #00f2fe;
+  padding: 18px 15px;
+  font-size: 14px;
+  text-transform: uppercase;
 }
-.btn-duyet {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-weight: bold;
+
+.bang-duyet tbody td {
+  padding: 16px 15px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
 }
-.btn-duyet:hover {
-  background-color: #45a049;
+
+.bang-duyet tbody tr:hover {
+  background-color: rgba(0, 242, 254, 0.03); /* Sáng nhẹ màu cyan khi rê chuột */
 }
-.btn-da-duyet {
-  background-color: #ccc;
-  color: #666;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: not-allowed;
+
+/* Số tiền - Phóng to và tô màu đỏ/cam nổi bật */
+.bang-duyet td[style*="color: red"] {
+  color: #f43f5e !important;
+  font-size: 17px;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
 }
+
+/* Nhãn Trạng Thái (Pill Badge) */
 .badge-cho {
-  background-color: #ffeb3b;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: bold;
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
+
 .badge-xong {
-  background-color: #8bc34a;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Nút Hành Động */
+.btn-duyet {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: bold;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-duyet:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+.btn-da-duyet {
+  background-color: #334155;
+  color: #94a3b8;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: not-allowed;
 }
