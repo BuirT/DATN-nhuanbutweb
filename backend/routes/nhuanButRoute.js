@@ -62,21 +62,30 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// 6. API Thống kê tổng tiền theo từng Tác giả
+// 6. API Thống kê tổng tiền theo từng Tác giả (Có thêm chức năng lọc Tháng/Năm)
 router.get("/thong-ke-tong", async (req, res) => {
   try {
+    const { thang, nam } = req.query; // Lấy tháng, năm từ đường dẫn URL
+    let filter = { trangThai: "Đã duyệt" };
+
+    // Nếu có chọn tháng/năm thì tạo bộ lọc ngày tháng
+    if (thang && nam) {
+      const start = new Date(nam, thang - 1, 1); // Ngày đầu tháng
+      const end = new Date(nam, thang, 0, 23, 59, 59); // Ngày cuối tháng
+      filter.createdAt = { $gte: start, $lte: end };
+    }
+
     const thongKe = await NhuanBut.aggregate([
-      { $match: { trangThai: "Đã duyệt" } }, // Chỉ tính những bài đã được duyệt
+      { $match: filter },
       {
         $group: {
-          _id: "$tacGia", // Nhóm theo ID tác giả
-          tongTien: { $sum: "$tienNhuanBut" }, // Cộng tổng tiền
-          soBai: { $sum: 1 }, // Đếm số lượng bài
+          _id: "$tacGia",
+          tongTien: { $sum: "$tienNhuanBut" },
+          soBai: { $sum: 1 },
         },
       },
       {
         $lookup: {
-          // Lấy thêm thông tin tên tác giả từ bảng TacGia
           from: "tacgias",
           localField: "_id",
           foreignField: "_id",
