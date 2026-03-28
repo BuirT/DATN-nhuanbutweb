@@ -1,0 +1,33 @@
+.thongke-container {
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+.card-tong {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.bang-thongke {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.bang-thongke th {
+  background-color: #4b6cb7;
+  color: white;
+  padding: 12px;
+}
+.bang-thongke td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+.money {
+  font-weight: bold;
+  color: #e91e63;
+}

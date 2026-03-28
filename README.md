@@ -9,10 +9,12 @@ Viết README.md để người khác biết đồ án có cái gì.
 
 ---
 
-Mỗi lần code xong một tính năng, cứ dùng 3 lệnh này để lưu code lại và chia sẻ cho nhóm.
+Mỗi lần code xong, dùng 3 lệnh này để lưu code lại và chia sẻ cho nhóm.
 "git add ."
 "git commit -m "lời nhắn của bạn" "
 "git push origin <tên-nhánh>"
+
+Muốn cập nhật code mới nhất thì nhập lệnh: git pull origin main.
 
 # Cách mời bạn bè vào chung kho code
 

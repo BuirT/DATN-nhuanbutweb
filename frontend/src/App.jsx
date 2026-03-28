@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import TacGia from "./components/TacGia/TacGia";
 import NhuanBut from "./components/NhuanBut/NhuanBut";
 import DuyetChi from "./components/DuyetChi/DuyetChi";
-import "./App.css"; // Gọi file CSS trang trí Menu
+import ThongKe from "./components/ThongKe/ThongKe";
+import "./App.css";
 
 function App() {
   return (
@@ -12,9 +13,12 @@ function App() {
         <nav className="navbar">
           <h1 className="logo">TÒA SOẠN BÁO</h1>
           <ul className="nav-links">
-            {/* Thẻ Link này giống thẻ <a> trong HTML nhưng xịn hơn, nó không làm tải lại trang */}
+            {/* Trang chủ giờ sẽ dẫn thẳng đến Thống kê */}
             <li>
-              <Link to="/">Quản lý Tác Giả</Link>
+              <Link to="/">Báo Cáo Thống Kê</Link>
+            </li>
+            <li>
+              <Link to="/tac-gia">Quản lý Tác Giả</Link>
             </li>
             <li>
               <Link to="/nhuan-but">Quản lý Nhuận Bút</Link>
@@ -28,10 +32,11 @@ function App() {
         {/* --- KHU VỰC HIỂN THỊ NỘI DUNG TƯƠNG ỨNG VỚI MENU --- */}
         <div className="main-content">
           <Routes>
-            {/* Khi đường dẫn là "/" thì hiện trang Tác Giả */}
-            <Route path="/" element={<TacGia />} />
+            {/* Đường dẫn "/" bây giờ sẽ hiện trang Thống Kê đầu tiên */}
+            <Route path="/" element={<ThongKe />} />
 
-            {/* Khi đường dẫn là "/nhuan-but" thì hiện trang Nhuận Bút */}
+            {/* Các trang còn lại được đặt ở các đường dẫn riêng biệt */}
+            <Route path="/tac-gia" element={<TacGia />} />
             <Route path="/nhuan-but" element={<NhuanBut />} />
             <Route path="/duyet-chi" element={<DuyetChi />} />
           </Routes>

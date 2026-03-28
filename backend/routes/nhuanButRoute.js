@@ -62,4 +62,33 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// 6. API Thống kê tổng tiền theo từng Tác giả
+router.get("/thong-ke-tong", async (req, res) => {
+  try {
+    const thongKe = await NhuanBut.aggregate([
+      { $match: { trangThai: "Đã duyệt" } }, // Chỉ tính những bài đã được duyệt
+      {
+        $group: {
+          _id: "$tacGia", // Nhóm theo ID tác giả
+          tongTien: { $sum: "$tienNhuanBut" }, // Cộng tổng tiền
+          soBai: { $sum: 1 }, // Đếm số lượng bài
+        },
+      },
+      {
+        $lookup: {
+          // Lấy thêm thông tin tên tác giả từ bảng TacGia
+          from: "tacgias",
+          localField: "_id",
+          foreignField: "_id",
+          as: "infoTacGia",
+        },
+      },
+      { $unwind: "$infoTacGia" },
+    ]);
+    res.status(200).json(thongKe);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi thống kê!", error: error.message });
+  }
+});
+
 module.exports = router;
