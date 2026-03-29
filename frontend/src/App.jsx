@@ -7,6 +7,7 @@ import NhuanBut from "./components/NhuanBut/NhuanBut";
 import DuyetChi from "./components/DuyetChi/DuyetChi";
 import ThongKe from "./components/ThongKe/ThongKe";
 import Login from "./components/Login/Login";
+import SoBao from "./components/SoBao/SoBao";
 import "./App.css";
 
 function App() {
@@ -59,6 +60,9 @@ function App() {
               <Link to="/tac-gia">Quản lý Tác Giả</Link>
             </li>
             <li>
+              <Link to="/so-bao">Quản lý Số Báo</Link>
+            </li>
+            <li>
               <Link to="/nhuan-but">Quản lý Nhuận Bút</Link>
             </li>
 
@@ -86,6 +90,7 @@ function App() {
           <Routes>
             <Route path="/" element={<ThongKe />} />
             <Route path="/tac-gia" element={<TacGia />} />
+            <Route path="/so-bao" element={<SoBao />} />  
             <Route path="/nhuan-but" element={<NhuanBut />} />
 
             {/* TÍNH NĂNG PHÂN QUYỀN: Chỉ Lãnh đạo mới vào được đường dẫn này */}

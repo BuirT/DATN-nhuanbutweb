@@ -1,0 +1,33 @@
+/* Dùng chung form-box và bảng với các trang khác cho đồng bộ */
+.sobao-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.btn-luu-bao {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%); /* Màu tím mượt mà cho phần Số báo */
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-luu-bao:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.badge-loai {
+  background-color: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
