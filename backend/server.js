@@ -10,6 +10,7 @@ const duyetChiRoute = require("./routes/duyetChiRoute");
 const thongKeRoute = require("./routes/thongKeRoute");
 const authRoute = require("./routes/authRoute");
 const soBaoRoute = require("./routes/soBaoRoute");
+const phieuChiRoute = require('./routes/phieuChiRoute');
 
 const app = express();
 app.use(cors());
@@ -22,6 +23,7 @@ app.use("/api/duyetchi", duyetChiRoute);
 app.use("/api/thongke", thongKeRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/sobao", soBaoRoute);
+app.use("/api/phieuchi", phieuChiRoute);
 
 mongoose
   .connect(process.env.MONGO_URI)

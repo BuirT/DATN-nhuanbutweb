@@ -8,6 +8,7 @@ import DuyetChi from "./components/DuyetChi/DuyetChi";
 import ThongKe from "./components/ThongKe/ThongKe";
 import Login from "./components/Login/Login";
 import SoBao from "./components/SoBao/SoBao";
+import PhieuChi from "./components/PhieuChi/PhieuChi";
 import "./App.css";
 
 function App() {
@@ -65,6 +66,9 @@ function App() {
             <li>
               <Link to="/nhuan-but">Quản lý Nhuận Bút</Link>
             </li>
+            <li>
+              <Link to="/phieu-chi">Kế Toán Xuất Phiếu</Link>
+            </li>
 
             {/* TÍNH NĂNG PHÂN QUYỀN: Chỉ Lãnh đạo mới thấy nút này */}
             {vaiTro === "Lãnh đạo" && (
@@ -90,8 +94,9 @@ function App() {
           <Routes>
             <Route path="/" element={<ThongKe />} />
             <Route path="/tac-gia" element={<TacGia />} />
-            <Route path="/so-bao" element={<SoBao />} />  
+            <Route path="/so-bao" element={<SoBao />} />
             <Route path="/nhuan-but" element={<NhuanBut />} />
+            <Route path="/phieu-chi" element={<PhieuChi />} />
 
             {/* TÍNH NĂNG PHÂN QUYỀN: Chỉ Lãnh đạo mới vào được đường dẫn này */}
             {vaiTro === "Lãnh đạo" && <Route path="/duyet-chi" element={<DuyetChi />} />}

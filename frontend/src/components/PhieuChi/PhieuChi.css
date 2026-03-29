@@ -1,0 +1,64 @@
+.phieuchi-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.highlight-box {
+  border: 2px dashed #facc15;
+  background-color: rgba(250, 204, 21, 0.05);
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.badge-so-luong {
+  background-color: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.btn-lap-phieu {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+  transition: 0.3s;
+}
+
+.btn-lap-phieu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(234, 179, 8, 0.5);
+}
+
+.btn-xuat-phieu {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-xuat-phieu:hover {
+  filter: brightness(1.2);
+}

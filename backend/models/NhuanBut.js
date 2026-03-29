@@ -3,17 +3,20 @@ const mongoose = require("mongoose");
 const nhuanButSchema = new mongoose.Schema(
   {
     tenBai: { type: String, required: true },
-    tacGia: { type: mongoose.Schema.Types.ObjectId, ref: "TacGia", required: true }, // Liên kết với bảng TacGia
-    muc: { type: String }, // Mục tin/bài/ảnh
+
+    // Liên kết với bảng Tác Giả
+    tacGia: { type: mongoose.Schema.Types.ObjectId, ref: "TacGia", required: true },
+
+    // Lấy mã số báo từ Menu xổ xuống
+    soBao: { type: String, required: true },
+
+    // TIỀN BẠC (Gốc - Thuế - Thực lãnh)
     tienNhuanBut: { type: Number, required: true },
-    soBao: { type: String }, // Số báo phát hành
-    trangThai: {
-      type: String,
-      enum: ["Chờ duyệt", "Đã duyệt", "Đã chi trả"],
-      default: "Chờ duyệt",
-    },
-    nguoiNhap: { type: String }, // Người nhập liệu hệ thống
-    ghiChu: { type: String }, // Xử lý sai sót như chấm sót, cao tiền...
+    thue: { type: Number, default: 0 },
+    thucLanh: { type: Number, default: 0 },
+
+    ghiChu: { type: String },
+    trangThai: { type: String, default: "Chờ duyệt" },
   },
   { timestamps: true },
 );
