@@ -3,6 +3,73 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "../NhuanBut/NhuanBut.css";
 
+// MANG DỮ LIỆU: Danh sách 63 Tỉnh/Thành phố Việt Nam (Xếp theo A-Z)
+const danhSachTinhThanh = [
+  "An Giang",
+  "Bà Rịa - Vũng Tàu",
+  "Bạc Liêu",
+  "Bắc Giang",
+  "Bắc Kạn",
+  "Bắc Ninh",
+  "Bến Tre",
+  "Bình Định",
+  "Bình Dương",
+  "Bình Phước",
+  "Bình Thuận",
+  "Cà Mau",
+  "Cao Bằng",
+  "Cần Thơ",
+  "Đà Nẵng",
+  "Đắk Lắk",
+  "Đắk Nông",
+  "Điện Biên",
+  "Đồng Nai",
+  "Đồng Tháp",
+  "Gia Lai",
+  "Hà Giang",
+  "Hà Nam",
+  "Hà Nội",
+  "Hà Tĩnh",
+  "Hải Dương",
+  "Hải Phòng",
+  "Hậu Giang",
+  "Hòa Bình",
+  "Hưng Yên",
+  "Khánh Hòa",
+  "Kiên Giang",
+  "Kon Tum",
+  "Lai Châu",
+  "Lâm Đồng",
+  "Lạng Sơn",
+  "Lào Cai",
+  "Long An",
+  "Nam Định",
+  "Nghệ An",
+  "Ninh Bình",
+  "Ninh Thuận",
+  "Phú Thọ",
+  "Phú Yên",
+  "Quảng Bình",
+  "Quảng Nam",
+  "Quảng Ngãi",
+  "Quảng Ninh",
+  "Quảng Trị",
+  "Sóc Trăng",
+  "Sơn La",
+  "Tây Ninh",
+  "Thái Bình",
+  "Thái Nguyên",
+  "Thanh Hóa",
+  "Thừa Thiên Huế",
+  "Tiền Giang",
+  "TP. Hồ Chí Minh",
+  "Trà Vinh",
+  "Tuyên Quang",
+  "Vĩnh Long",
+  "Vĩnh Phúc",
+  "Yên Bái",
+];
+
 function PhieuChi() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
   const [danhSachSoBao, setDanhSachSoBao] = useState([]);
@@ -49,7 +116,7 @@ function PhieuChi() {
       return khopSoBao && khopKhuVuc;
     });
 
-    // 3. Gom nhóm theo Tác Giả (Code xuất sắc của đồng chí Tí)
+    // 3. Gom nhóm theo Tác Giả
     const groupedData = dataLoc.reduce((acc, bai) => {
       const idTG = bai.tacGia?._id;
       if (!idTG) return acc;
@@ -119,7 +186,7 @@ function PhieuChi() {
         hinhThuc: formData.hinhThuc,
         lyDo: formData.lyDo,
       };
-      // Nếu chưa code Backend cho PhieuChi thì dòng dưới có thể báo lỗi đỏ, nhưng không sao, bài vẫn đổi trạng thái
+
       await axios.post("http://localhost:5000/api/phieuchi/tao-phieu", payload).catch(() => console.log("Chưa có API Phiếu Chi"));
 
       toast.success("✅ Tạo Phiếu Chi và Tất toán thành công!");
@@ -185,17 +252,19 @@ function PhieuChi() {
               </option>
             ))}
           </select>
+
+          {/* ĐÃ BỔ SUNG LỌC BẰNG DANH SÁCH 63 TỈNH THÀNH */}
           <select
             value={locKhuVuc}
             onChange={(e) => setLocKhuVuc(e.target.value)}
             style={{ flex: 1, padding: "10px", borderRadius: "8px", backgroundColor: "#0f172a", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}
           >
-            <option value="">-- Tất cả Khu Vực --</option>
-            <option value="TP.HCM">TP. Hồ Chí Minh</option>
-            <option value="Hà Nội">Hà Nội</option>
-            <option value="Đà Nẵng">Đà Nẵng</option>
-            <option value="Miền Nam">Miền Nam</option>
-            <option value="Khác">Khu vực Khác</option>
+            <option value="">-- Tất cả Tỉnh / Thành phố --</option>
+            {danhSachTinhThanh.map((tinh, index) => (
+              <option key={index} value={tinh}>
+                {tinh}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -238,44 +307,46 @@ function PhieuChi() {
       {/* BẢNG TỔNG HỢP CÔNG NỢ */}
       <h3 style={{ color: "#e2e8f0" }}>{tabHienTai === "ChoTrinhDuyet" ? "Danh Sách Chờ Trình Duyệt" : "Danh Sách Chờ Thanh Toán"}</h3>
 
-      <table className="bang-danh-sach">
-        <thead>
-          <tr>
-            <th>Tác Giả</th>
-            <th>Khu Vực</th>
-            <th>Số Lượng Bài</th>
-            <th style={{ color: "#f87171" }}>Tổng Thuế</th>
-            <th style={{ color: "#34d399" }}>Tổng Thực Lãnh</th>
-            <th>Hành Động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {danhSachGom.length === 0 ? (
+      <div style={{ overflowX: "auto", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+        <table className="bang-danh-sach">
+          <thead>
             <tr>
-              <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "#64748b" }}>
-                Không có dữ liệu trong mục này.
-              </td>
+              <th>Tác Giả</th>
+              <th>Khu Vực</th>
+              <th>Số Lượng Bài</th>
+              <th style={{ color: "#f87171" }}>Tổng Thuế</th>
+              <th style={{ color: "#34d399" }}>Tổng Thực Lãnh</th>
+              <th>Hành Động</th>
             </tr>
-          ) : (
-            danhSachGom.map((nhom) => (
-              <tr key={nhom.tacGia._id}>
-                <td style={{ fontWeight: "bold", fontSize: "15px", color: "#e2e8f0" }}>{nhom.tacGia.hoTen}</td>
-                <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
-                <td>
-                  <span style={{ backgroundColor: "#334155", padding: "4px 8px", borderRadius: "5px" }}>{nhom.danhSachBai.length} bài</span>
-                </td>
-                <td style={{ color: "#f87171" }}>{nhom.tongThue > 0 ? `-${nhom.tongThue.toLocaleString("vi-VN")}đ` : "0đ"}</td>
-                <td style={{ color: "#34d399", fontWeight: "bold", fontSize: "16px" }}>{nhom.tongThucLanh.toLocaleString("vi-VN")}đ</td>
-                <td>
-                  <button onClick={() => handleMoForm(nhom)} style={{ background: "none", border: "1px solid #94a3b8", color: "#fff", padding: "6px 12px", borderRadius: "5px", cursor: "pointer" }}>
-                    Lập Phiếu
-                  </button>
+          </thead>
+          <tbody>
+            {danhSachGom.length === 0 ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "#64748b" }}>
+                  Không có dữ liệu trong mục này.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              danhSachGom.map((nhom) => (
+                <tr key={nhom.tacGia._id}>
+                  <td style={{ fontWeight: "bold", fontSize: "15px", color: "#e2e8f0" }}>{nhom.tacGia.hoTen}</td>
+                  <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
+                  <td>
+                    <span style={{ backgroundColor: "#334155", padding: "4px 8px", borderRadius: "5px" }}>{nhom.danhSachBai.length} bài</span>
+                  </td>
+                  <td style={{ color: "#f87171" }}>{nhom.tongThue > 0 ? `-${nhom.tongThue.toLocaleString("vi-VN")}đ` : "0đ"}</td>
+                  <td style={{ color: "#34d399", fontWeight: "bold", fontSize: "16px" }}>{nhom.tongThucLanh.toLocaleString("vi-VN")}đ</td>
+                  <td>
+                    <button onClick={() => handleMoForm(nhom)} style={{ background: "none", border: "1px solid #94a3b8", color: "#fff", padding: "6px 12px", borderRadius: "5px", cursor: "pointer" }}>
+                      Lập Phiếu
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

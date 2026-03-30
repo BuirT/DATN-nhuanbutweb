@@ -3,6 +3,73 @@ import axios from "axios";
 import { toast } from "react-toastify"; // Nhúng động cơ thông báo
 import "./TacGia.css";
 
+// Danh sách 63 Tỉnh/Thành phố Việt Nam (Xếp theo A-Z)
+const danhSachTinhThanh = [
+  "An Giang",
+  "Bà Rịa - Vũng Tàu",
+  "Bạc Liêu",
+  "Bắc Giang",
+  "Bắc Kạn",
+  "Bắc Ninh",
+  "Bến Tre",
+  "Bình Định",
+  "Bình Dương",
+  "Bình Phước",
+  "Bình Thuận",
+  "Cà Mau",
+  "Cao Bằng",
+  "Cần Thơ",
+  "Đà Nẵng",
+  "Đắk Lắk",
+  "Đắk Nông",
+  "Điện Biên",
+  "Đồng Nai",
+  "Đồng Tháp",
+  "Gia Lai",
+  "Hà Giang",
+  "Hà Nam",
+  "Hà Nội",
+  "Hà Tĩnh",
+  "Hải Dương",
+  "Hải Phòng",
+  "Hậu Giang",
+  "Hòa Bình",
+  "Hưng Yên",
+  "Khánh Hòa",
+  "Kiên Giang",
+  "Kon Tum",
+  "Lai Châu",
+  "Lâm Đồng",
+  "Lạng Sơn",
+  "Lào Cai",
+  "Long An",
+  "Nam Định",
+  "Nghệ An",
+  "Ninh Bình",
+  "Ninh Thuận",
+  "Phú Thọ",
+  "Phú Yên",
+  "Quảng Bình",
+  "Quảng Nam",
+  "Quảng Ngãi",
+  "Quảng Ninh",
+  "Quảng Trị",
+  "Sóc Trăng",
+  "Sơn La",
+  "Tây Ninh",
+  "Thái Bình",
+  "Thái Nguyên",
+  "Thanh Hóa",
+  "Thừa Thiên Huế",
+  "Tiền Giang",
+  "TP. Hồ Chí Minh",
+  "Trà Vinh",
+  "Tuyên Quang",
+  "Vĩnh Long",
+  "Vĩnh Phúc",
+  "Yên Bái",
+];
+
 function TacGia() {
   const [danhSachTacGia, setDanhSachTacGia] = useState([]);
   const [isEditing, setIsEditing] = useState(null);
@@ -12,7 +79,7 @@ function TacGia() {
     hoTen: "",
     butDanh: "",
     loaiTacGia: "CTV",
-    khuVuc: "TP.HCM",
+    khuVuc: "TP. Hồ Chí Minh", // Đặt mặc định theo chuẩn danh sách mới
     dienThoai: "",
   });
 
@@ -52,14 +119,14 @@ function TacGia() {
       hoTen: tacGia.hoTen,
       butDanh: tacGia.butDanh || "",
       loaiTacGia: tacGia.loaiTacGia,
-      khuVuc: tacGia.khuVuc,
+      khuVuc: tacGia.khuVuc || "TP. Hồ Chí Minh",
       dienThoai: tacGia.dienThoai || "",
     });
   };
 
   const handleHuySua = () => {
     setIsEditing(null);
-    setFormData({ maTacGia: "", hoTen: "", butDanh: "", loaiTacGia: "CTV", khuVuc: "TP.HCM", dienThoai: "" });
+    setFormData({ maTacGia: "", hoTen: "", butDanh: "", loaiTacGia: "CTV", khuVuc: "TP. Hồ Chí Minh", dienThoai: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -85,15 +152,26 @@ function TacGia() {
       <div className="form-box" style={{ marginBottom: "30px" }}>
         <h2 style={{ color: "#fff", borderLeft: "4px solid #00f2fe", paddingLeft: "10px", marginBottom: "20px" }}>{isEditing ? "🛠️ Cập Nhật Thông Tin Tác Giả" : "Thêm Tác Giả / Phóng Viên Mới"}</h2>
 
-        {/* Đã đổi class thành form-tacgia để nhận CSS mới */}
         <form className="form-tacgia" onSubmit={handleSubmit}>
           <input type="text" name="maTacGia" value={formData.maTacGia} onChange={handleChange} placeholder="Mã TG" required />
           <input type="text" name="hoTen" value={formData.hoTen} onChange={handleChange} placeholder="Họ và Tên" required />
           <input type="text" name="butDanh" value={formData.butDanh} onChange={handleChange} placeholder="Bút Danh" />
+
           <select name="loaiTacGia" value={formData.loaiTacGia} onChange={handleChange}>
             <option value="CTV">Cộng Tác Viên</option>
             <option value="Phóng viên">Phóng Viên</option>
           </select>
+
+          {/* MENU CHỌN TỈNH THÀNH (TỰ ĐỘNG LẶP 63 TỈNH) */}
+          <select name="khuVuc" value={formData.khuVuc} onChange={handleChange} required>
+            <option value="">-- Chọn Tỉnh / Thành Phố --</option>
+            {danhSachTinhThanh.map((tinh, index) => (
+              <option key={index} value={tinh}>
+                {tinh}
+              </option>
+            ))}
+          </select>
+
           <input type="text" name="dienThoai" value={formData.dienThoai} onChange={handleChange} placeholder="Số điện thoại" />
 
           <div style={{ display: "flex", gap: "10px", flex: 1, minWidth: "150px" }}>
@@ -112,9 +190,7 @@ function TacGia() {
       {/* KHU VỰC BẢNG DANH SÁCH */}
       <h3 style={{ color: "#e2e8f0", marginBottom: "15px" }}>Danh sách Tác giả / Phóng viên</h3>
 
-      {/* Bọc bảng trong thẻ div để bo góc và đổ bóng mượt mà giống các trang khác */}
       <div style={{ overflowX: "auto", backgroundColor: "#121827", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
-        {/* Đã gỡ thuộc tính border="1" và đổi class thành bang-tacgia */}
         <table className="bang-tacgia">
           <thead>
             <tr>
@@ -134,7 +210,6 @@ function TacGia() {
                 <td style={{ color: "#f8fafc", fontWeight: "600" }}>{tacGia.hoTen}</td>
                 <td>{tacGia.butDanh}</td>
                 <td>
-                  {/* Thêm hiệu ứng badge cho Loại Tác Giả */}
                   <span
                     style={{
                       backgroundColor: tacGia.loaiTacGia === "Phóng viên" ? "rgba(56, 189, 248, 0.15)" : "rgba(16, 185, 129, 0.15)",
@@ -148,14 +223,13 @@ function TacGia() {
                     {tacGia.loaiTacGia}
                   </span>
                 </td>
-                <td>{tacGia.khuVuc}</td>
+                <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{tacGia.khuVuc || "Chưa phân loại"}</td>
                 <td>{tacGia.dienThoai}</td>
                 <td>
-                  {/* Bỏ style nội tuyến cứng nhắc, để CSS lo phần giao diện nút */}
-                  <button onClick={() => handleChonSua(tacGia)} title="Sửa thông tin">
+                  <button onClick={() => handleChonSua(tacGia)} title="Sửa thông tin" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px" }}>
                     ✏️
                   </button>
-                  <button onClick={() => handleXoa(tacGia._id)} title="Xóa tác giả">
+                  <button onClick={() => handleXoa(tacGia._id)} title="Xóa tác giả" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", marginLeft: "10px" }}>
                     🗑️
                   </button>
                 </td>

@@ -3,6 +3,73 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./DuyetChi.css";
 
+// DANH SÁCH 63 TỈNH THÀNH (Đồng bộ toàn hệ thống)
+const danhSachTinhThanh = [
+  "An Giang",
+  "Bà Rịa - Vũng Tàu",
+  "Bạc Liêu",
+  "Bắc Giang",
+  "Bắc Kạn",
+  "Bắc Ninh",
+  "Bến Tre",
+  "Bình Định",
+  "Bình Dương",
+  "Bình Phước",
+  "Bình Thuận",
+  "Cà Mau",
+  "Cao Bằng",
+  "Cần Thơ",
+  "Đà Nẵng",
+  "Đắk Lắk",
+  "Đắk Nông",
+  "Điện Biên",
+  "Đồng Nai",
+  "Đồng Tháp",
+  "Gia Lai",
+  "Hà Giang",
+  "Hà Nam",
+  "Hà Nội",
+  "Hà Tĩnh",
+  "Hải Dương",
+  "Hải Phòng",
+  "Hậu Giang",
+  "Hòa Bình",
+  "Hưng Yên",
+  "Khánh Hòa",
+  "Kiên Giang",
+  "Kon Tum",
+  "Lai Châu",
+  "Lâm Đồng",
+  "Lạng Sơn",
+  "Lào Cai",
+  "Long An",
+  "Nam Định",
+  "Nghệ An",
+  "Ninh Bình",
+  "Ninh Thuận",
+  "Phú Thọ",
+  "Phú Yên",
+  "Quảng Bình",
+  "Quảng Nam",
+  "Quảng Ngãi",
+  "Quảng Ninh",
+  "Quảng Trị",
+  "Sóc Trăng",
+  "Sơn La",
+  "Tây Ninh",
+  "Thái Bình",
+  "Thái Nguyên",
+  "Thanh Hóa",
+  "Thừa Thiên Huế",
+  "Tiền Giang",
+  "TP. Hồ Chí Minh",
+  "Trà Vinh",
+  "Tuyên Quang",
+  "Vĩnh Long",
+  "Vĩnh Phúc",
+  "Yên Bái",
+];
+
 function DuyetChi() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
 
@@ -26,8 +93,7 @@ function DuyetChi() {
     layDuLieu();
   }, []);
 
-  // --- THUẬT TOÁN TẠO DANH SÁCH LỌC TỰ ĐỘNG ---
-  const dsKhuVuc = ["Tất cả", ...new Set(danhSachBaiViet.map((b) => b.tacGia?.khuVuc).filter(Boolean))];
+  // Tự động lấy danh sách Số báo từ dữ liệu (vì số báo thì linh động thêm bớt)
   const dsSoBao = ["Tất cả", ...new Set(danhSachBaiViet.map((b) => b.soBao).filter(Boolean))];
 
   // --- ÁP DỤNG BỘ LỌC VÀO DỮ LIỆU ---
@@ -103,14 +169,16 @@ function DuyetChi() {
           ))}
         </select>
 
+        {/* THAY THẾ BỘ LỌC TỈNH THÀNH VÀO ĐÂY */}
         <select
           value={locKhuVuc}
           onChange={(e) => setLocKhuVuc(e.target.value)}
           style={{ padding: "8px 15px", borderRadius: "8px", backgroundColor: "#0f172a", color: "white", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}
         >
-          {dsKhuVuc.map((kv) => (
-            <option key={kv} value={kv}>
-              {kv === "Tất cả" ? "-- Tất cả Khu Vực --" : `Khu vực: ${kv}`}
+          <option value="Tất cả">-- Tất cả Tỉnh / Thành phố --</option>
+          {danhSachTinhThanh.map((tinh, index) => (
+            <option key={index} value={tinh}>
+              {tinh}
             </option>
           ))}
         </select>
@@ -133,7 +201,7 @@ function DuyetChi() {
             {danhSachGom.length === 0 ? (
               <tr>
                 <td colSpan="5" style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "16px" }}>
-                  🎉 Tuyệt vời! Hiện tại không có hồ sơ nào cần Sếp phải duyệt.
+                  Hiện tại không có hồ sơ nào cần Sếp phải duyệt.
                 </td>
               </tr>
             ) : (

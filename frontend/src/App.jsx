@@ -94,7 +94,7 @@ function App() {
                 👤 {vaiTro}: <strong>{hoTen}</strong>
               </span>
               <button onClick={handleLogout} className="btn-logout">
-                Đăng Xuất 🚪
+                Đăng Xuất
               </button>
             </li>
           </ul>
