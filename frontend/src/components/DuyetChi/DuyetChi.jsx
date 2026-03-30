@@ -6,16 +6,19 @@ import "./DuyetChi.css";
 function DuyetChi() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
 
-  // --- STATE CHO BỘ LỌC ---
+  // --- STATE CHO BỘ LỌC THÔNG MINH ---
   const [locKhuVuc, setLocKhuVuc] = useState("Tất cả");
   const [locSoBao, setLocSoBao] = useState("Tất cả");
 
   const layDuLieu = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/nhuanbut/danh-sach");
-      setDanhSachBaiViet(res.data);
+      // BƯỚC 1: Lãnh đạo chỉ nhìn thấy những bài kế toán đã "Trình Lãnh Đạo"
+      const baiTrinhDuyet = res.data.filter((bai) => bai.trangThai === "Trình Lãnh Đạo");
+      setDanhSachBaiViet(baiTrinhDuyet);
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu:", error);
+      toast.error("Lỗi tải dữ liệu trình duyệt!");
     }
   };
 
@@ -23,36 +26,67 @@ function DuyetChi() {
     layDuLieu();
   }, []);
 
-  const handleDuyetBai = async (id) => {
-    const xacNhan = window.confirm("Xác nhận duyệt chi trả cho bài viết này?");
-    if (!xacNhan) return;
-
-    try {
-      await axios.put(`http://localhost:5000/api/duyetchi/duyet-bai/${id}`, {
-        trangThai: "Đã duyệt",
-      });
-      toast.success("Đã duyệt chi thành công! Tiền đã xuất kho 💸");
-      layDuLieu();
-    } catch (error) {
-      toast.error("Có lỗi xảy ra, không thể duyệt bài!");
-    }
-  };
-
   // --- THUẬT TOÁN TẠO DANH SÁCH LỌC TỰ ĐỘNG ---
   const dsKhuVuc = ["Tất cả", ...new Set(danhSachBaiViet.map((b) => b.tacGia?.khuVuc).filter(Boolean))];
   const dsSoBao = ["Tất cả", ...new Set(danhSachBaiViet.map((b) => b.soBao).filter(Boolean))];
 
   // --- ÁP DỤNG BỘ LỌC VÀO DỮ LIỆU ---
-  const danhSachHienThi = danhSachBaiViet.filter((bai) => {
+  const danhSachSauLoc = danhSachBaiViet.filter((bai) => {
     const matchKhuVuc = locKhuVuc === "Tất cả" || bai.tacGia?.khuVuc === locKhuVuc;
     const matchSoBao = locSoBao === "Tất cả" || bai.soBao === locSoBao;
     return matchKhuVuc && matchSoBao;
   });
 
+  // --- GOM BÀI SAU LỌC THÀNH TỪNG PHIẾU CHI (Sếp duyệt theo cụm) ---
+  const groupedData = danhSachSauLoc.reduce((acc, bai) => {
+    const idTG = bai.tacGia?._id;
+    if (!idTG) return acc;
+
+    if (!acc[idTG]) {
+      acc[idTG] = {
+        tacGia: bai.tacGia,
+        danhSachBai: [],
+        tongThucLanh: 0,
+      };
+    }
+    acc[idTG].danhSachBai.push(bai);
+
+    const tienGoc = Number(bai.tienNhuanBut) || 0;
+    const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0;
+    acc[idTG].tongThucLanh += tienGoc - tienThue;
+
+    return acc;
+  }, {});
+
+  const danhSachGom = Object.values(groupedData);
+
+  // --- HÀNH ĐỘNG CỦA LÃNH ĐẠO ---
+  const handleDuyetPhieu = async (nhom) => {
+    if (window.confirm(`Sếp có chắc chắn DUYỆT CHI ${nhom.tongThucLanh.toLocaleString("vi-VN")}đ cho tác giả ${nhom.tacGia.hoTen}?`)) {
+      try {
+        await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt" })));
+        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
+        layDuLieu();
+      } catch (error) {
+        toast.error("Lỗi khi duyệt phiếu!");
+      }
+    }
+  };
+
+  const handleTuChoi = async (nhom) => {
+    if (window.confirm(`Sếp muốn TỪ CHỐI phiếu này và trả về cho Kế toán xử lý lại?`)) {
+      try {
+        await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Chờ duyệt" })));
+        toast.warning(`❌ Đã TRẢ LẠI phiếu của ${nhom.tacGia.hoTen} về phòng Kế toán!`);
+        layDuLieu();
+      } catch (error) {
+        toast.error("Lỗi khi từ chối phiếu!");
+      }
+    }
+  };
+
   return (
     <div className="duyetchi-container">
-      <h2>Ban Lãnh Đạo Ký Duyệt</h2>
-
       {/* --- THANH CÔNG CỤ LỌC (FILTER BAR) --- */}
       <div style={{ display: "flex", gap: "20px", marginBottom: "20px", backgroundColor: "#1e293b", padding: "15px", borderRadius: "10px", alignItems: "center" }}>
         <h4 style={{ margin: 0, color: "#94a3b8" }}>🔍 Bộ Lọc Nhanh:</h4>
@@ -81,64 +115,67 @@ function DuyetChi() {
           ))}
         </select>
 
-        <div style={{ marginLeft: "auto", color: "#38bdf8", fontWeight: "bold" }}>Đang hiển thị: {danhSachHienThi.length} bài viết</div>
+        <div style={{ marginLeft: "auto", color: "#38bdf8", fontWeight: "bold" }}>Đang hiển thị: {danhSachGom.length} Phiếu Trình</div>
       </div>
 
-      <table className="bang-duyet">
-        <thead>
-          <tr>
-            <th>Tên Bài</th>
-            <th>Tác Giả</th>
-            <th>Khu Vực</th>
-            <th>Số Báo</th>
-            <th>Tiền Gốc</th>
-            <th style={{ color: "#f87171" }}>Thuế TNCN</th>
-            <th style={{ color: "#34d399" }}>Thực Lãnh</th>
-            <th>Trạng Thái</th>
-            <th>Hành Động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {danhSachHienThi.map((bai) => {
-            const tienGoc = bai.tienNhuanBut || 0;
-            const tienThue = bai.thue || 0;
-            const thucLanh = bai.thucLanh || tienGoc;
-
-            return (
-              <tr key={bai._id}>
-                <td>
-                  <strong>{bai.tenBai}</strong>
-                </td>
-                <td>{bai.tacGia?.hoTen}</td>
-
-                {/* Hiển thị Khu Vực của Tác Giả */}
-                <td>
-                  <span style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", padding: "4px 8px", borderRadius: "5px", fontSize: "12px" }}>{bai.tacGia?.khuVuc || "Chưa rõ"}</span>
-                </td>
-
-                <td style={{ fontWeight: "bold", color: "#4facfe" }}>{bai.soBao}</td>
-                <td style={{ fontWeight: "bold" }}>{tienGoc.toLocaleString("vi-VN")}đ</td>
-                <td style={{ color: "#f87171" }}>{tienThue > 0 ? `-${tienThue.toLocaleString("vi-VN")}đ` : "0đ"}</td>
-                <td style={{ color: "#34d399", fontWeight: "bold", fontSize: "16px" }}>{thucLanh.toLocaleString("vi-VN")}đ</td>
-                <td>
-                  <span className={bai.trangThai === "Chờ duyệt" ? "badge-cho" : "badge-xong"}>{bai.trangThai}</span>
-                </td>
-                <td>
-                  {bai.trangThai === "Chờ duyệt" ? (
-                    <button className="btn-duyet" onClick={() => handleDuyetBai(bai._id)}>
-                      ✔️ Duyệt Chi
-                    </button>
-                  ) : (
-                    <button className="btn-da-duyet" disabled>
-                      Đã Duyệt
-                    </button>
-                  )}
+      <div style={{ overflowX: "auto", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+        <table className="bang-danh-sach">
+          <thead>
+            <tr>
+              <th>Người Thụ Hưởng (Tác Giả)</th>
+              <th>Khu Vực</th>
+              <th>Số Lượng Bài</th>
+              <th style={{ color: "#facc15" }}>Số Tiền Đề Nghị Chi</th>
+              <th>Hành Động Của Sếp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {danhSachGom.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "16px" }}>
+                  🎉 Tuyệt vời! Hiện tại không có hồ sơ nào cần Sếp phải duyệt.
                 </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ) : (
+              danhSachGom.map((nhom) => (
+                <tr key={nhom.tacGia._id}>
+                  <td style={{ fontWeight: "bold", fontSize: "16px", color: "#e2e8f0" }}>{nhom.tacGia.hoTen}</td>
+                  <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
+                  <td>
+                    <span style={{ backgroundColor: "#334155", padding: "4px 8px", borderRadius: "5px", fontSize: "13px" }}>Chi tiết: {nhom.danhSachBai.length} bài</span>
+                  </td>
+                  <td style={{ color: "#facc15", fontWeight: "bold", fontSize: "18px" }}>{nhom.tongThucLanh.toLocaleString("vi-VN")}đ</td>
+                  <td>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button
+                        onClick={() => handleDuyetPhieu(nhom)}
+                        style={{
+                          background: "linear-gradient(90deg, #10b981 0%, #059669 100%)",
+                          color: "white",
+                          border: "none",
+                          padding: "8px 15px",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                          boxShadow: "0 4px 10px rgba(16, 185, 129, 0.3)",
+                        }}
+                      >
+                        ✅ DUYỆT CHI
+                      </button>
+                      <button
+                        onClick={() => handleTuChoi(nhom)}
+                        style={{ background: "#ef4444", color: "white", border: "none", padding: "8px 15px", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}
+                      >
+                        ❌ TỪ CHỐI
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

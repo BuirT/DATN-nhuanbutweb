@@ -9,7 +9,7 @@ import ThongKe from "./components/ThongKe/ThongKe";
 import Login from "./components/Login/Login";
 import SoBao from "./components/SoBao/SoBao";
 import PhieuChi from "./components/PhieuChi/PhieuChi";
-import TaiKhoan from "./components/TaiKhoan/TaiKhoan"; 
+import TaiKhoan from "./components/TaiKhoan/TaiKhoan";
 import "./App.css";
 
 function App() {
@@ -36,6 +36,12 @@ function App() {
     return <Login onLogin={handleLoginSuccess} />;
   }
 
+  // --- HÀM KIỂM TRA QUYỀN TRUY CẬP ---
+  const isThuKy = vaiTro === "Nhập Liệu" || vaiTro === "Thư ký" || vaiTro === "Admin";
+  const isKeToan = vaiTro === "Kế Toán" || vaiTro === "Kế toán" || vaiTro === "Admin";
+  const isLanhDao = vaiTro === "Lãnh đạo" || vaiTro === "Lãnh Đạo" || vaiTro === "Admin";
+  const isAdmin = vaiTro === "Admin";
+
   return (
     <Router>
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
@@ -44,32 +50,50 @@ function App() {
         <nav className="navbar">
           <h1 className="logo">TÒA SOẠN BÁO</h1>
 
-          <ul className="nav-links" style={{ width: "100%", display: "flex", alignItems: "center" }}>
-            <li><Link to="/">Báo Cáo Thống Kê</Link></li>
-            <li><Link to="/tac-gia">Quản lý Tác Giả</Link></li>
-            <li><Link to="/so-bao">Quản lý Số Báo</Link></li>
-            <li><Link to="/nhuan-but">Quản lý Nhuận Bút</Link></li>
-            <li><Link to="/phieu-chi">Kế Toán Xuất Phiếu</Link></li>
+          {/* Xóa toàn bộ style inline, nhường sân chơi cho CSS */}
+          <ul className="nav-links">
+            <li>
+              <Link to="/">Báo Cáo Thống Kê</Link>
+            </li>
 
-            {/* --- PHÂN QUYỀN ADMIN: Chỉ Admin mới thấy nút này --- */}
-            {vaiTro === "Admin" && (
+            {isThuKy && (
+              <>
+                <li>
+                  <Link to="/tac-gia">Quản lý Tác Giả</Link>
+                </li>
+                <li>
+                  <Link to="/so-bao">Quản lý Số Báo</Link>
+                </li>
+                <li>
+                  <Link to="/nhuan-but">Quản lý Nhuận Bút</Link>
+                </li>
+              </>
+            )}
+
+            {isKeToan && (
               <li>
-                <Link to="/quan-ly-tai-khoan">Quản Lý Tài Khoản</Link>
+                <Link to="/phieu-chi">Kế Toán Xuất Phiếu</Link>
               </li>
             )}
 
-            {/* --- PHÂN QUYỀN LÃNH ĐẠO: Chỉ Lãnh đạo mới thấy nút này --- */}
-            {vaiTro === "Lãnh đạo" && (
+            {isLanhDao && (
               <li>
                 <Link to="/duyet-chi">Lãnh Đạo Duyệt</Link>
               </li>
             )}
 
-            <li style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "15px" }}>
-              <span style={{ color: "#ffeb3b", fontSize: "14px" }}>
+            {isAdmin && (
+              <li>
+                <Link to="/quan-ly-tai-khoan">Quản Lý Tài Khoản</Link>
+              </li>
+            )}
+
+            {/* Gắn class riêng cho khu vực người dùng để CSS dễ bắt */}
+            <li className="user-info-item">
+              <span className="user-greeting">
                 👤 {vaiTro}: <strong>{hoTen}</strong>
               </span>
-              <button onClick={handleLogout} style={{ backgroundColor: "#f44336", color: "white", border: "none", padding: "6px 12px", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}>
+              <button onClick={handleLogout} className="btn-logout">
                 Đăng Xuất 🚪
               </button>
             </li>
@@ -79,20 +103,18 @@ function App() {
         <div className="main-content">
           <Routes>
             <Route path="/" element={<ThongKe />} />
-            <Route path="/tac-gia" element={<TacGia />} />
-            <Route path="/so-bao" element={<SoBao />} />
-            <Route path="/nhuan-but" element={<NhuanBut />} />
-            <Route path="/phieu-chi" element={<PhieuChi />} />
-            
-            {/* --- BẢO MẬT ĐƯỜNG DẪN ADMIN --- */}
-            {vaiTro === "Admin" && (
-              <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />
+
+            {isThuKy && (
+              <>
+                <Route path="/tac-gia" element={<TacGia />} />
+                <Route path="/so-bao" element={<SoBao />} />
+                <Route path="/nhuan-but" element={<NhuanBut />} />
+              </>
             )}
 
-            {/* --- BẢO MẬT ĐƯỜNG DẪN LÃNH ĐẠO --- */}
-            {vaiTro === "Lãnh đạo" && (
-              <Route path="/duyet-chi" element={<DuyetChi />} />
-            )}
+            {isKeToan && <Route path="/phieu-chi" element={<PhieuChi />} />}
+            {isLanhDao && <Route path="/duyet-chi" element={<DuyetChi />} />}
+            {isAdmin && <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />}
 
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

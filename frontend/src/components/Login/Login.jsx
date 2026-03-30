@@ -23,10 +23,10 @@ function Login({ onLogin }) {
       if (isRegister) {
         // --- LUỒNG ĐĂNG KÝ ---
         await axios.post("http://localhost:5000/api/users/them", {
-          username: formData.taiKhoan, 
+          username: formData.taiKhoan,
           password: formData.matKhau,
           hoTen: formData.hoTen,
-          vaiTro: formData.vaiTro
+          vaiTro: formData.vaiTro,
         });
 
         toast.success("Hệ thống đã ghi nhận. Vui lòng đăng nhập để tiếp tục!", {
@@ -35,12 +35,12 @@ function Login({ onLogin }) {
           theme: "colored",
         });
 
-        setIsRegister(false); 
+        setIsRegister(false);
       } else {
         // --- LUỒNG ĐĂNG NHẬP ---
         const res = await axios.post("http://localhost:5000/api/auth/login", {
-          username: formData.taiKhoan, 
-          password: formData.matKhau   
+          username: formData.taiKhoan,
+          password: formData.matKhau,
         });
 
         localStorage.setItem("token", res.data.token);
@@ -60,7 +60,7 @@ function Login({ onLogin }) {
     } catch (error) {
       // Đã nâng cấp: In lỗi chi tiết ra màn hình đen (Console F12) để dễ bắt bệnh
       console.error("🚨 Báo cáo lỗi từ Backend:", error.response?.data || error.message);
-      
+
       toast.error(error.response?.data?.message || "Lỗi Server: Không thể kết nối với dữ liệu!", {
         position: "top-right",
         autoClose: 3000,
@@ -86,8 +86,6 @@ function Login({ onLogin }) {
                 <select name="vaiTro" value={formData.vaiTro} onChange={handleChange}>
                   <option value="Thư ký">Thư ký / Nhập liệu</option>
                   <option value="Kế Toán">Kế Toán</option>
-                  <option value="Lãnh đạo">Lãnh đạo (Duyệt chi)</option>
-                  <option value="Admin">Admin (Quản Trị)</option>
                 </select>
               </div>
             </>
@@ -107,9 +105,7 @@ function Login({ onLogin }) {
 
         <p className="toggle-text">
           {isRegister ? "Đã có tài khoản?" : "Chưa có tài khoản?"}
-          <span onClick={() => setIsRegister(!isRegister)}>
-            {isRegister ? " Đăng nhập ngay" : " Tạo tài khoản"}
-          </span>
+          <span onClick={() => setIsRegister(!isRegister)}>{isRegister ? " Đăng nhập ngay" : " Tạo tài khoản"}</span>
         </p>
       </div>
     </div>

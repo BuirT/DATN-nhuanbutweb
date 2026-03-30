@@ -111,32 +111,28 @@ function NhuanBut() {
   };
 
   // --- LOGIC HỆ THỐNG CẢNH BÁO VƯỢT NGÂN SÁCH ---
-  const soBaoHienTai = danhSachSoBao.find(sb => sb.maSoBao === formData.soBao);
+  const soBaoHienTai = danhSachSoBao.find((sb) => sb.maSoBao === formData.soBao);
   const nganSachToiDa = soBaoHienTai ? soBaoHienTai.nganSach : 0;
 
-  const tongTienDaChi = danhSachBaiViet
-    .filter(bai => bai.soBao === formData.soBao)
-    .reduce((tong, bai) => tong + (Number(bai.tienNhuanBut) || 0), 0);
+  const tongTienDaChi = danhSachBaiViet.filter((bai) => bai.soBao === formData.soBao).reduce((tong, bai) => tong + (Number(bai.tienNhuanBut) || 0), 0);
 
   let tienDaChiThucTe = tongTienDaChi;
   if (isEditing) {
-    const baiCu = danhSachBaiViet.find(b => b._id === isEditing);
+    const baiCu = danhSachBaiViet.find((b) => b._id === isEditing);
     if (baiCu) {
-      tienDaChiThucTe -= (Number(baiCu.tienNhuanBut) || 0);
+      tienDaChiThucTe -= Number(baiCu.tienNhuanBut) || 0;
     }
   }
 
   const tienDangNhap = Number(formData.tienNhuanBut) || 0;
-  const isVuotNganSach = nganSachToiDa > 0 && (tienDaChiThucTe + tienDangNhap) > nganSachToiDa;
+  const isVuotNganSach = nganSachToiDa > 0 && tienDaChiThucTe + tienDangNhap > nganSachToiDa;
 
   return (
     <div className="nhuanbut-container">
       {/* KHU VỰC FORM NHẬP LIỆU */}
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#38bdf8" : "#ffffff", borderLeft: "4px solid #38bdf8", paddingLeft: "10px" }}>
-          {isEditing ? "🛠️ Sửa Thông Tin Bài Viết" : "📝 Nhập Nhuận Bút & Tính Thuế"}
-        </h3>
-        
+        <h3 style={{ color: isEditing ? "#38bdf8" : "#ffffff", borderLeft: "4px solid #38bdf8", paddingLeft: "10px" }}>{isEditing ? "🛠️ Sửa Thông Tin Bài Viết" : "📝 Nhập Nhuận Bút & Tính Thuế"}</h3>
+
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="tenBai" value={formData.tenBai} onChange={handleChange} placeholder="Tên bài viết" required style={{ width: "100%", marginBottom: "15px" }} />
 
@@ -149,7 +145,7 @@ function NhuanBut() {
                 </option>
               ))}
             </select>
-            
+
             <select name="soBao" value={formData.soBao} onChange={handleChange} required style={{ flex: 1 }}>
               <option value="">-- Chọn Kỳ Báo / Số Báo --</option>
               {danhSachSoBao.map((bao) => (
@@ -161,38 +157,61 @@ function NhuanBut() {
           </div>
 
           <div style={{ display: "flex", gap: "15px", width: "100%", alignItems: "center", marginBottom: "15px" }}>
-            <input 
-              type="number" 
-              name="tienNhuanBut" 
-              value={formData.tienNhuanBut} 
-              onChange={handleChange} 
-              placeholder="💰 Nhập Tiền Gốc (VNĐ)" 
-              required 
-              min="0" // Chặn nhập số âm
-              style={{ flex: 1 }} 
-            />
+            <input type="number" name="tienNhuanBut" value={formData.tienNhuanBut} onChange={handleChange} placeholder="💰 Nhập Tiền Gốc (VNĐ)" required min="0" style={{ flex: 1 }} />
 
-            <div style={{ flex: 1, padding: "12px", backgroundColor: "rgba(244, 63, 94, 0.1)", color: "#f87171", borderRadius: "8px", border: "1px solid rgba(244, 63, 94, 0.3)", display: "flex", alignItems: "center", fontSize: "14px" }}>
+            <div
+              style={{
+                flex: 1,
+                padding: "12px",
+                backgroundColor: "rgba(244, 63, 94, 0.1)",
+                color: "#f87171",
+                borderRadius: "8px",
+                border: "1px solid rgba(244, 63, 94, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                fontSize: "14px",
+              }}
+            >
               Thuế TNCN (10%): <strong>&nbsp;{thue.toLocaleString()}đ</strong>
             </div>
 
-            <div style={{ flex: 1, padding: "12px", backgroundColor: "rgba(16, 185, 129, 0.1)", color: "#34d399", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.3)", display: "flex", alignItems: "center", fontSize: "15px" }}>
+            <div
+              style={{
+                flex: 1,
+                padding: "12px",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                color: "#34d399",
+                borderRadius: "8px",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                fontSize: "15px",
+              }}
+            >
               Thực lãnh: <strong style={{ fontSize: "18px" }}>&nbsp;{thucLanh.toLocaleString()}đ</strong>
             </div>
           </div>
 
           {/* GIAO DIỆN HỆ THỐNG CẢNH BÁO */}
           {formData.soBao && nganSachToiDa > 0 && (
-            <div style={{ marginBottom: "15px", padding: "15px", borderRadius: "8px", backgroundColor: isVuotNganSach ? "rgba(239, 68, 68, 0.15)" : "rgba(16, 185, 129, 0.15)", border: `1px solid ${isVuotNganSach ? "#ef4444" : "#10b981"}` }}>
+            <div
+              style={{
+                marginBottom: "15px",
+                padding: "15px",
+                borderRadius: "8px",
+                backgroundColor: isVuotNganSach ? "rgba(239, 68, 68, 0.15)" : "rgba(16, 185, 129, 0.15)",
+                border: `1px solid ${isVuotNganSach ? "#ef4444" : "#10b981"}`,
+              }}
+            >
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ color: "#cbd5e1" }}>Ngân sách cấp cho <b>{formData.soBao}</b>:</span>
+                <span style={{ color: "#cbd5e1" }}>
+                  Ngân sách cấp cho <b>{formData.soBao}</b>:
+                </span>
                 <span style={{ color: "#38bdf8", fontWeight: "bold" }}>{nganSachToiDa.toLocaleString()} đ</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ color: "#cbd5e1" }}>Tổng đã chi + Bài hiện tại:</span>
-                <span style={{ color: isVuotNganSach ? "#ef4444" : "#10b981", fontWeight: "bold" }}>
-                  {(tienDaChiThucTe + tienDangNhap).toLocaleString()} đ
-                </span>
+                <span style={{ color: isVuotNganSach ? "#ef4444" : "#10b981", fontWeight: "bold" }}>{(tienDaChiThucTe + tienDangNhap).toLocaleString()} đ</span>
               </div>
               {isVuotNganSach && (
                 <div style={{ marginTop: "10px", color: "#f87171", fontWeight: "bold", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -203,14 +222,14 @@ function NhuanBut() {
           )}
 
           <div style={{ display: "flex", gap: "10px" }}>
-            <button 
-              type="submit" 
-              className="btn-luu-bai" 
+            <button
+              type="submit"
+              className="btn-luu-bai"
               disabled={isVuotNganSach}
-              style={{ 
-                opacity: isVuotNganSach ? 0.5 : 1, 
-                cursor: isVuotNganSach ? "not-allowed" : "pointer", 
-                backgroundColor: isVuotNganSach ? "#64748b" : "" 
+              style={{
+                opacity: isVuotNganSach ? 0.5 : 1,
+                cursor: isVuotNganSach ? "not-allowed" : "pointer",
+                backgroundColor: isVuotNganSach ? "#64748b" : "",
               }}
             >
               {isEditing ? "Cập Nhật Dữ Liệu" : "Lưu Bài & Tính Toán"}
@@ -224,8 +243,14 @@ function NhuanBut() {
         </form>
       </div>
 
-      {/* KHU VỰC BẢNG HIỂN THỊ */}
-      <h3 style={{ marginTop: "30px", marginBottom: "15px", color: "#e2e8f0" }}>Bảng Kê Chi Tiết Nhuận Bút</h3>
+      {/* KHU VỰC BẢNG HIỂN THỊ CÓ KÈM NÚT IN ẤN */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "30px", marginBottom: "15px" }}>
+        <h3 style={{ color: "#e2e8f0", margin: 0 }}>Bảng Kê Chi Tiết Nhuận Bút</h3>
+        <button type="button" className="btn-in-an" onClick={() => window.print()}>
+          🖨️ In Bảng Kê Trình Ký
+        </button>
+      </div>
+
       <div style={{ overflowX: "auto", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
         <table className="bang-danh-sach">
           <thead>
@@ -257,13 +282,15 @@ function NhuanBut() {
                   <td style={{ color: "#f87171" }}>{tienThue > 0 ? `-${tienThue.toLocaleString()}đ` : "0đ"}</td>
                   <td style={{ color: "#34d399", fontWeight: "bold", fontSize: "15px" }}>{tienThuc.toLocaleString()}đ</td>
                   <td>
-                    <span className={bai.trangThai === "Đã duyệt" || bai.trangThai === "Đã thanh toán" ? "badge-xong" : "badge-cho"}>
-                      {bai.trangThai || "Chờ duyệt"}
-                    </span>
+                    <span className={bai.trangThai === "Đã duyệt" || bai.trangThai === "Đã thanh toán" ? "badge-xong" : "badge-cho"}>{bai.trangThai || "Chờ duyệt"}</span>
                   </td>
                   <td>
-                    <button onClick={() => handleChonSua(bai)} title="Sửa bài">✏️</button>
-                    <button onClick={() => handleXoa(bai._id)} title="Xóa bài">🗑️</button>
+                    <button onClick={() => handleChonSua(bai)} title="Sửa bài">
+                      ✏️
+                    </button>
+                    <button onClick={() => handleXoa(bai._id)} title="Xóa bài">
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               );
@@ -277,6 +304,24 @@ function NhuanBut() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* KHU VỰC CHỮ KÝ (Chỉ hiện ra trên giấy in) */}
+      <div className="khu-vuc-chu-ky">
+        <div className="chu-ky-box">
+          <div className="chu-ky-title">Người Nhập Liệu</div>
+          <div className="chu-ky-note">(Ký, ghi rõ họ tên)</div>
+        </div>
+
+        <div className="chu-ky-box">
+          <div className="chu-ky-title">Người Kiểm Tra</div>
+          <div className="chu-ky-note">(Ký, ghi rõ họ tên)</div>
+        </div>
+
+        <div className="chu-ky-box">
+          <div className="chu-ky-title">Tổng Thư Ký Tòa Soạn</div>
+          <div className="chu-ky-note">(Ký, ghi rõ họ tên)</div>
+        </div>
       </div>
     </div>
   );

@@ -102,3 +102,86 @@ button:nth-child(2) {
 button:hover {
   filter: brightness(1.2);
 }
+/* --- NÚT IN ẤN --- */
+.btn-in-an {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-in-an:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+
+/* --- KHU VỰC CHỮ KÝ (BÌNH THƯỜNG ẨN MẤT) --- */
+.khu-vuc-chu-ky {
+  display: none;
+}
+
+/* --- MA THUẬT KHI BẤM CTRL + P HOẶC IN ẤN --- */
+@media print {
+  /* 1. Giấu thanh menu, form nhập liệu và nút bấm đi */
+  .navbar,
+  .form-box,
+  .btn-in-an,
+  .toast-container {
+    display: none !important;
+  }
+
+  /* 2. Đổi nền đen thành nền trắng chữ đen cho đỡ tốn mực máy in */
+  body,
+  .nhuanbut-container,
+  .main-content {
+    background-color: white !important;
+    background: none !important;
+    color: black !important;
+  }
+
+  /* 3. Giấu luôn cột "Hành Động" (Nút Sửa/Xóa) trong bảng */
+  .bang-danh-sach th:last-child,
+  .bang-danh-sach td:last-child {
+    display: none !important;
+  }
+
+  /* 4. Định dạng lại bảng cho đẹp trên giấy */
+  .bang-danh-sach {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  .bang-danh-sach th,
+  .bang-danh-sach td {
+    border: 1px solid black !important;
+    color: black !important;
+    padding: 8px !important;
+  }
+
+  /* 5. HIỆN KHU VỰC CHỮ KÝ Ở CUỐI TRANG */
+  .khu-vuc-chu-ky {
+    display: flex !important;
+    justify-content: space-between !important;
+    margin-top: 50px !important;
+    padding: 0 20px !important;
+    color: black !important;
+  }
+  .chu-ky-box {
+    text-align: center;
+  }
+  .chu-ky-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  .chu-ky-note {
+    font-style: italic;
+    font-size: 13px;
+  }
+}
