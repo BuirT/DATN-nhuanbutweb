@@ -76,7 +76,7 @@ function DuyetChi() {
   // --- STATE CHO BỘ LỌC THÔNG MINH ---
   const [locKhuVuc, setLocKhuVuc] = useState("Tất cả");
   const [locSoBao, setLocSoBao] = useState("Tất cả");
-
+  const tenNguoiDung = localStorage.getItem("hoTen") || "Lãnh Đạo Vô Danh"; 
   const layDuLieu = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/nhuanbut/danh-sach");
@@ -130,8 +130,8 @@ function DuyetChi() {
   const handleDuyetPhieu = async (nhom) => {
     if (window.confirm(`Sếp có chắc chắn DUYỆT CHI ${nhom.tongThucLanh.toLocaleString("vi-VN")}đ cho tác giả ${nhom.tacGia.hoTen}?`)) {
       try {
-        await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt" })));
-        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
+// Thêm nguoiThaoTac vào cạnh trangThai
+await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt", nguoiThaoTac: tenNguoiDung })));        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
         layDuLieu();
       } catch (error) {
         toast.error("Lỗi khi duyệt phiếu!");

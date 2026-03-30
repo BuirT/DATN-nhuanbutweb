@@ -1,34 +1,26 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import * as XLSX from "xlsx";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from "recharts";
-import "./ThongKe.css";
+import { toast } from "react-toastify";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
+import "./ThongKe.css"; // GỌI FILE CSS GIAO DIỆN
+
+// Đăng ký các phần tử biểu đồ với Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 function ThongKe() {
-  const [danhSachBai, setDanhSachBai] = useState([]);
-  const [thang, setThang] = useState(new Date().getMonth() + 1);
-  const [nam, setNam] = useState(new Date().getFullYear());
-  const [thoiGianThuc, setThoiGianThuc] = useState(new Date());
+  const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
+  const [dangTai, setDangTai] = useState(true);
 
-  // Bảng màu chuẩn FinTech Darkmode cho biểu đồ
-  const COLORS_BAR = ["#00f2fe", "#4facfe", "#38bdf8", "#818cf8", "#a855f7", "#e879f9"];
-  const COLORS_PIE = ["#facc15", "#34d399", "#fb923c", "#f43f5e", "#60a5fa"];
-
-  // --- ĐỒNG HỒ REALTIME ---
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setThoiGianThuc(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
+  // --- GỌI API LẤY DỮ LIỆU ---
   const layDuLieu = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/nhuanbut/danh-sach");
-      const baiHople = res.data.filter((bai) => bai.trangThai === "Đã duyệt" || bai.trangThai === "Đã thanh toán");
-      setDanhSachBai(baiHople);
+      setDanhSachBaiViet(res.data);
+      setDangTai(false);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu:", error);
+      toast.error("Không thể kết nối đến máy chủ để lấy số liệu!");
+      setDangTai(false);
     }
   };
 
@@ -36,209 +28,234 @@ function ThongKe() {
     layDuLieu();
   }, []);
 
-  // --- 1. BỘ LỌC DỮ LIỆU THEO THÁNG & NĂM ---
-  const danhSachHienThi = danhSachBai.filter((bai) => {
-    const date = new Date(bai.createdAt);
-    return date.getMonth() + 1 === Number(thang) && date.getFullYear() === Number(nam);
-  });
+  // ==========================================
+  // THUẬT TOÁN TÍNH TOÁN DÒNG TIỀN TỔNG QUAN
+  // ==========================================
+  const tongSoBai = danhSachBaiViet.length;
+  const tongTienHienTai = danhSachBaiViet.reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
+  const tienDaChi = danhSachBaiViet.filter(bai => bai.trangThai === "Đã thanh toán").reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
+  const tienChuaChi = tongTienHienTai - tienDaChi;
+  const tongThue = danhSachBaiViet.reduce((sum, bai) => sum + (Number(bai.thue) || 0), 0);
+  const tyLeGiaiNgan = tongTienHienTai > 0 ? Math.round((tienDaChi / tongTienHienTai) * 100) : 0;
+  
+  const demTrangThai = danhSachBaiViet.reduce((acc, bai) => {
+    const status = bai.trangThai || "Chờ duyệt";
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
 
-  // --- 2. TÍNH TOÁN CÁC CHỈ SỐ TỔNG QUAN ---
-  const tongTien = danhSachHienThi.reduce((acc, bai) => acc + (bai.thucLanh || bai.tienNhuanBut || 0), 0);
-  const tongSoBai = danhSachHienThi.length;
+  // ==========================================
+  // THUẬT TOÁN BÓC TÁCH DỮ LIỆU CHO 3 BIỂU ĐỒ
+  // ==========================================
+  
+  // 1. Dữ liệu: Tiền chi theo Số báo
+  const dataByIssue = danhSachBaiViet.reduce((acc, bai) => {
+    const issue = bai.soBao || "Chưa rõ";
+    acc[issue] = (acc[issue] || 0) + (Number(bai.thucLanh) || 0);
+    return acc;
+  }, {});
+  const issueLabels = Object.keys(dataByIssue);
+  const issueValues = Object.values(dataByIssue);
 
-  // --- 3. CHẾ BIẾN DỮ LIỆU TÁC GIẢ (SỬA LẠI LOGIC GOM NHÓM CHUẨN HƠN) ---
-  const mapTacGia = {};
-  danhSachHienThi.forEach((bai) => {
-    const tenTG = bai.tacGia?.hoTen || "Ẩn danh";
-    const khuVuc = bai.tacGia?.khuVuc || "Chưa rõ";
-    const tien = bai.thucLanh || bai.tienNhuanBut || 0;
+  // 2. Dữ liệu: Hoạt động theo Khu vực
+  const dataByRegion = danhSachBaiViet.reduce((acc, bai) => {
+    const region = bai.tacGia?.khuVuc || "Chưa rõ";
+    if (!acc[region]) acc[region] = { count: 0, money: 0 };
+    acc[region].count += 1;
+    acc[region].money += (Number(bai.thucLanh) || 0);
+    return acc;
+  }, {});
+  const regionLabels = Object.keys(dataByRegion);
+  const regionCounts = regionLabels.map(r => dataByRegion[r].count);
+  const regionMoneys = regionLabels.map(r => dataByRegion[r].money);
 
-    if (!mapTacGia[tenTG]) {
-      mapTacGia[tenTG] = { name: tenTG, khuVuc: khuVuc, soBai: 0, tien: 0 };
-    }
-    mapTacGia[tenTG].soBai += 1;
-    mapTacGia[tenTG].tien += tien;
-  });
-
-  const dataTacGia = Object.values(mapTacGia).sort((a, b) => b.tien - a.tien);
-  const tongSoTacGia = dataTacGia.length;
-
-  // --- 4. CHẾ BIẾN DỮ LIỆU KHU VỰC ---
-  const mapKhuVuc = {};
-  danhSachHienThi.forEach((bai) => {
-    const khuVuc = bai.tacGia?.khuVuc || "Chưa rõ";
-    const tien = bai.thucLanh || bai.tienNhuanBut || 0;
-
-    if (!mapKhuVuc[khuVuc]) {
-      mapKhuVuc[khuVuc] = { name: khuVuc, tien: 0 };
-    }
-    mapKhuVuc[khuVuc].tien += tien;
-  });
-  const dataKhuVuc = Object.values(mapKhuVuc);
-
-  // --- 5. HÀM XUẤT EXCEL ---
-  const handleXuatExcel = () => {
-    if (danhSachHienThi.length === 0) {
-      alert("Đồng chí ơi, tháng này chưa có dữ liệu để xuất đâu!");
-      return;
-    }
-    const dataExcel = danhSachHienThi.map((bai, index) => ({
-      STT: index + 1,
-      "Tên Bài": bai.tenBai,
-      "Tác giả": bai.tacGia?.hoTen || "Ẩn danh",
-      "Khu Vực": bai.tacGia?.khuVuc || "Chưa rõ",
-      "Số Báo": bai.soBao,
-      "Tiền Thực Lãnh (VNĐ)": bai.thucLanh || bai.tienNhuanBut || 0,
-      "Trạng Thái": bai.trangThai,
-      "Ngày Tạo": new Date(bai.createdAt).toLocaleDateString("vi-VN"),
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dataExcel);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "BaoCao");
-    XLSX.writeFile(workbook, `BaoCao_Thang${thang}_${nam}.xlsx`);
+  // ==========================================
+  // CẤU HÌNH GIAO DIỆN BIỂU ĐỒ (CHART.JS CONFIG)
+  // ==========================================
+  
+  const pieData = {
+    labels: ['Chờ duyệt', 'Trình Lãnh Đạo', 'Đã duyệt', 'Đã thanh toán'],
+    datasets: [{
+      data: [demTrangThai['Chờ duyệt'] || 0, demTrangThai['Trình Lãnh Đạo'] || 0, demTrangThai['Đã duyệt'] || 0, demTrangThai['Đã thanh toán'] || 0],
+      backgroundColor: ['#facc15', '#3b82f6', '#10b981', '#a855f7'],
+      borderColor: '#1e293b',
+      borderWidth: 2,
+    }],
   };
 
+  const barDataIssue = {
+    labels: issueLabels,
+    datasets: [{
+      label: 'Số tiền thực chi (VNĐ)',
+      data: issueValues,
+      backgroundColor: '#38bdf8',
+      borderRadius: 5,
+    }],
+  };
+
+  const barDataRegion = {
+    labels: regionLabels,
+    datasets: [
+      {
+        label: 'Số lượng bài (Cột trắng)',
+        data: regionCounts,
+        backgroundColor: '#f8fafc',
+        borderRadius: 5,
+      },
+      {
+        label: 'Số tiền chi (Triệu VNĐ - Cột xanh)',
+        data: regionMoneys.map(m => (m / 1000000).toFixed(1)),
+        backgroundColor: '#10b981',
+        borderRadius: 5,
+      }
+    ],
+  };
+
+  // --- MÀN HÌNH CHỜ (LOADING) ---
+  if (dangTai) {
+    return <h2 style={{ color: "#38bdf8", textAlign: "center", marginTop: "100px" }}>⏳ Hệ thống đang tổng hợp số liệu...</h2>;
+  }
+
+  // --- GIAO DIỆN CHÍNH ---
   return (
     <div className="thongke-container">
-      {/* HEADER: TIÊU ĐỀ & ĐỒNG HỒ */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h2 style={{ color: "#fff", margin: 0 }}>📊 DASHBOARD THỐNG KÊ NHUẬN BÚT</h2>
-        <div style={{ color: "#38bdf8", fontSize: "1.2rem", fontWeight: "bold", background: "#1e293b", padding: "8px 15px", borderRadius: "8px" }}>
-          🕒 {thoiGianThuc.toLocaleTimeString("vi-VN")} | {thoiGianThuc.toLocaleDateString("vi-VN")}
+      
+      {/* Tiêu đề trang */}
+      <div className="thongke-header">
+        <h2 className="thongke-title">📊 BÁO CÁO TOÀN CẢNH TÒA SOẠN</h2>
+        <p style={{ color: "#94a3b8", margin: "5px 0 0 0" }}>Số liệu cập nhật theo thời gian thực (Real-time)</p>
+      </div>
+
+      {/* 4 Thẻ tổng quan */}
+      <div className="thongke-grid">
+        <div className="stat-card card-blue">
+          <div className="stat-label">Tổng Quy Mô Chi Trả</div>
+          <div className="stat-value">{tongTienHienTai.toLocaleString()}đ</div>
+          <div className="stat-sub">Tổng: {tongSoBai} bài viết / ảnh</div>
+        </div>
+        <div className="stat-card card-green">
+          <div className="stat-label">Đã Giải Ngân (Thanh toán)</div>
+          <div className="stat-value" style={{ color: "#34d399" }}>{tienDaChi.toLocaleString()}đ</div>
+          <div className="stat-sub">Hoàn tất thủ tục</div>
+        </div>
+        <div className="stat-card card-red">
+          <div className="stat-label">Công Nợ Tồn Đọng (Chưa chi)</div>
+          <div className="stat-value" style={{ color: "#f87171" }}>{tienChuaChi.toLocaleString()}đ</div>
+          <div className="stat-sub">Đang chờ Ký duyệt / Xuất quỹ</div>
+        </div>
+        <div className="stat-card card-yellow">
+          <div className="stat-label">Tổng Thuế Thu Hộ (TNCN)</div>
+          <div className="stat-value" style={{ color: "#facc15" }}>{tongThue.toLocaleString()}đ</div>
+          <div className="stat-sub">Tạm giữ để nộp ngân sách</div>
         </div>
       </div>
 
-      {/* BỘ LỌC VÀ CÁC THẺ TỔNG QUAN (CARDS) */}
-      <div className="st-card" style={{ marginBottom: "20px", display: "flex", flexDirection: "column", gap: "15px" }}>
-        <div className="filter-box" style={{ display: "flex", gap: "20px", alignItems: "center", borderBottom: "1px solid #334155", paddingBottom: "15px" }}>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <label style={{ color: "#fff", fontWeight: "bold" }}>Tháng:</label>
-            <select value={thang} onChange={(e) => setThang(e.target.value)} style={{ padding: "5px", borderRadius: "5px" }}>
-              {[...Array(12)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  Tháng {i + 1}
-                </option>
-              ))}
-            </select>
+      {/* Thanh tiến độ giải ngân */}
+      <div className="progress-section">
+        <div className="progress-header">
+          <span>Tiến độ Giải Ngân Quỹ Nhuận Bút</span>
+          <span style={{ color: "#34d399", fontSize: "18px" }}>{tyLeGiaiNgan}%</span>
+        </div>
+        <div className="progress-bar-bg">
+          <div className="progress-bar-fill" style={{ width: `${tyLeGiaiNgan}%` }}>
+            {tyLeGiaiNgan > 5 && `${tyLeGiaiNgan}%`}
           </div>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <label style={{ color: "#fff", fontWeight: "bold" }}>Năm:</label>
-            <select value={nam} onChange={(e) => setNam(e.target.value)} style={{ padding: "5px", borderRadius: "5px" }}>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-            </select>
-          </div>
-          <button
-            onClick={handleXuatExcel}
-            className="btn-excel"
-            style={{ marginLeft: "auto", padding: "8px 15px", background: "#10b981", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}
-          >
-            📥 Xuất Báo Cáo Excel
-          </button>
+        </div>
+        <p style={{ color: "#64748b", fontSize: "13px", marginTop: "10px", fontStyle: "italic" }}>
+          * Biểu đồ thể hiện tỷ lệ số tiền đã thực chi so với tổng số tiền Tòa soạn cam kết trả.
+        </p>
+      </div>
+
+      {/* Lưới 3 Biểu đồ trực quan */}
+      <div className="section-charts">
+        
+        {/* Biểu đồ cột ngang to: Tiền theo số báo */}
+        <div className="chart-card" style={{ gridColumn: "1 / -1" }}> 
+            <h3 className="chart-title">💰 Số tiền Nhuận bút chi cho mỗi Kỳ Báo</h3>
+            <div style={{ height: "300px" }}>
+                <Bar 
+                  data={barDataIssue} 
+                  options={{ 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } 
+                  }} 
+                />
+            </div>
         </div>
 
-        {/* 3 THẺ THỐNG KÊ CHI TIẾT */}
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "space-between" }}>
-          <div style={{ flex: 1, background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", padding: "20px", borderRadius: "10px", borderLeft: "4px solid #38bdf8", textAlign: "center" }}>
-            <p style={{ color: "#94a3b8", fontSize: "1.1rem", margin: "0 0 10px 0" }}>Tổng Tiền Đã Chi</p>
-            <h2 style={{ color: "#38bdf8", margin: 0, fontSize: "2rem" }}>{tongTien.toLocaleString()} đ</h2>
+        {/* Biểu đồ tròn: Trạng thái */}
+        <div className="chart-card">
+          <h3 className="chart-title">📁 Cơ cấu Trạng Thái Xử Lý</h3>
+          <div style={{ height: "250px", display: "flex", justifyContent: "center" }}>
+            <Pie 
+              data={pieData} 
+              options={{ 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 13 } } } } 
+              }} 
+            />
           </div>
-          <div style={{ flex: 1, background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", padding: "20px", borderRadius: "10px", borderLeft: "4px solid #a855f7", textAlign: "center" }}>
-            <p style={{ color: "#94a3b8", fontSize: "1.1rem", margin: "0 0 10px 0" }}>Tổng Số Bài Viết</p>
-            <h2 style={{ color: "#a855f7", margin: 0, fontSize: "2rem" }}>{tongSoBai} bài</h2>
-          </div>
-          <div style={{ flex: 1, background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", padding: "20px", borderRadius: "10px", borderLeft: "4px solid #facc15", textAlign: "center" }}>
-            <p style={{ color: "#94a3b8", fontSize: "1.1rem", margin: "0 0 10px 0" }}>Số Lượng Tác Giả</p>
-            <h2 style={{ color: "#facc15", margin: 0, fontSize: "2rem" }}>{tongSoTacGia} người</h2>
+        </div>
+
+        {/* Biểu đồ ngang: Khu vực */}
+        <div className="chart-card">
+          <h3 className="chart-title">📍 Hoạt Động Theo Khu Vực</h3>
+          <div style={{ height: "250px" }}>
+            <Bar 
+              data={barDataRegion} 
+              options={{ 
+                indexAxis: 'y', // Đảo thành biểu đồ ngang
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 12 } } } }, 
+                scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { display: false } } } 
+              }} 
+            />
           </div>
         </div>
       </div>
 
-      {/* KHU VỰC 2 BIỂU ĐỒ */}
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginBottom: "20px" }}>
-        <div className="st-card" style={{ flex: 2, minWidth: "400px" }}>
-          <h3 style={{ textAlign: "center", color: "#e2e8f0", marginBottom: "20px" }}>Top Tác Giả Nhận Nhuận Bút</h3>
-          <div style={{ width: "100%", height: 300 }}>
-            {dataTacGia.length > 0 ? (
-              <ResponsiveContainer>
-                <BarChart data={dataTacGia} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
-                  <YAxis tickFormatter={(value) => `${value / 1000}k`} stroke="#94a3b8" />
-                  <Tooltip contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", color: "#fff" }} formatter={(value) => `${value.toLocaleString()} VNĐ`} />
-                  <Bar dataKey="tien" radius={[5, 5, 0, 0]}>
-                    {dataTacGia.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS_BAR[index % COLORS_BAR.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <p style={{ textAlign: "center", color: "#64748b", marginTop: "100px" }}>Tháng này chưa có dữ liệu rủng rỉnh đâu đồng chí ạ</p>
-            )}
-          </div>
-        </div>
-
-        <div className="st-card" style={{ flex: 1, minWidth: "300px" }}>
-          <h3 style={{ textAlign: "center", color: "#e2e8f0", marginBottom: "20px" }}>Tỷ Trọng Khu Vực</h3>
-          <div style={{ width: "100%", height: 300 }}>
-            {dataKhuVuc.length > 0 ? (
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie data={dataKhuVuc} cx="50%" cy="45%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="tien">
-                    {dataKhuVuc.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", color: "#fff" }} formatter={(value) => `${value.toLocaleString()} VNĐ`} />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: "#e2e8f0" }} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <p style={{ textAlign: "center", color: "#64748b", marginTop: "100px" }}>Chưa có dữ liệu</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* BẢNG CHI TIẾT */}
-      <div className="st-card card-chart">
-        <h3 style={{ marginBottom: "15px", color: "#e2e8f0" }}>
-          Bảng Kê Chi Tiết Tác Giả - Tháng {thang}/{nam}
+      {/* Bảng phân tích hồ sơ chi tiết */}
+      <div className="progress-section" style={{ marginBottom: "0" }}>
+        <h3 style={{ color: "#e2e8f0", marginTop: "0", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>
+          📁 Phân Tích Hồ Sơ Nhanh
         </h3>
-        <div style={{ overflowX: "auto" }}>
-          <table className="bang-thongke" style={{ width: "100%", textAlign: "left", borderCollapse: "collapse", color: "#e2e8f0" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #334155" }}>
-                <th style={{ padding: "12px" }}>Tác giả</th>
-                <th style={{ padding: "12px" }}>Khu Vực</th>
-                <th style={{ padding: "12px", textAlign: "center" }}>Số Bài</th>
-                <th style={{ padding: "12px", textAlign: "right" }}>Tổng Thực Lãnh</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataTacGia.map((item, idx) => (
-                <tr key={idx} style={{ borderBottom: "1px solid #1e293b" }}>
-                  <td style={{ padding: "12px", fontWeight: "bold", color: "#38bdf8" }}>{item.name}</td>
-                  <td style={{ padding: "12px" }}>
-                    <span style={{ backgroundColor: "rgba(255,255,255,0.1)", padding: "4px 8px", borderRadius: "5px", fontSize: "12px" }}>{item.khuVuc}</span>
-                  </td>
-                  <td style={{ padding: "12px", textAlign: "center" }}>{item.soBai}</td>
-                  <td style={{ padding: "12px", textAlign: "right", fontWeight: "bold", color: "#10b981" }}>{item.tien.toLocaleString()} đ</td>
-                </tr>
-              ))}
-              {dataTacGia.length === 0 && (
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
-                    Không có dữ liệu trong thời gian này
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <table className="mini-table">
+          <thead>
+            <tr>
+              <th>Giai đoạn xử lý</th>
+              <th>Số lượng bài</th>
+              <th>Đánh giá tiến độ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style={{ color: "#facc15", fontWeight: "bold" }}>● Chờ duyệt (Mới nhập liệu)</span></td>
+              <td style={{ fontWeight: "bold" }}>{demTrangThai["Chờ duyệt"] || 0} bài</td>
+              <td style={{ color: "#94a3b8" }}>Nằm tại Phòng Thư Ký</td>
+            </tr>
+            <tr>
+              <td><span style={{ color: "#3b82f6", fontWeight: "bold" }}>● Trình Lãnh Đạo</span></td>
+              <td style={{ fontWeight: "bold" }}>{demTrangThai["Trình Lãnh Đạo"] || 0} bài</td>
+              <td style={{ color: "#94a3b8" }}>Chờ Giám đốc phê duyệt chi</td>
+            </tr>
+            <tr>
+              <td><span style={{ color: "#10b981", fontWeight: "bold" }}>● Đã duyệt (Chờ xuất tiền)</span></td>
+              <td style={{ fontWeight: "bold" }}>{demTrangThai["Đã duyệt"] || 0} bài</td>
+              <td style={{ color: "#94a3b8" }}>Nằm tại Phòng Kế toán</td>
+            </tr>
+            <tr>
+              <td><span style={{ color: "#a855f7", fontWeight: "bold" }}>● Đã thanh toán (Hoàn tất)</span></td>
+              <td style={{ fontWeight: "bold", color: "#34d399" }}>{demTrangThai["Đã thanh toán"] || 0} bài</td>
+              <td style={{ color: "#34d399" }}>Tiền đã vào tài khoản Tác giả</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
     </div>
   );
 }
