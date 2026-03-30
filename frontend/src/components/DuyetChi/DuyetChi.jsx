@@ -1,9 +1,8 @@
-import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./DuyetChi.css";
+import { toast } from "react-toastify";
+import "./DuyetChi.css"; // ĐÃ GỌI FILE CSS MỚI
 
-// DANH SÁCH 63 TỈNH THÀNH (Đồng bộ toàn hệ thống)
 const danhSachTinhThanh = [
   "An Giang",
   "Bà Rịa - Vũng Tàu",
@@ -73,18 +72,22 @@ const danhSachTinhThanh = [
 function DuyetChi() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
 
-  // --- STATE CHO BỘ LỌC THÔNG MINH ---
+  // --- BỘ LỌC VÀ TRẠNG THÁI ---
   const [locKhuVuc, setLocKhuVuc] = useState("Tất cả");
   const [locSoBao, setLocSoBao] = useState("Tất cả");
-  const tenNguoiDung = localStorage.getItem("hoTen") || "Lãnh Đạo Vô Danh"; 
+
+  // 👉 QUẢN LÝ DÒNG MỞ RỘNG (ACCORDION)
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  // Lấy tên Lãnh đạo đăng nhập để đóng mộc
+  const tenNguoiDung = localStorage.getItem("hoTen") || "Lãnh Đạo Vô Danh";
+
   const layDuLieu = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/nhuanbut/danh-sach");
-      // BƯỚC 1: Lãnh đạo chỉ nhìn thấy những bài kế toán đã "Trình Lãnh Đạo"
       const baiTrinhDuyet = res.data.filter((bai) => bai.trangThai === "Trình Lãnh Đạo");
       setDanhSachBaiViet(baiTrinhDuyet);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu:", error);
       toast.error("Lỗi tải dữ liệu trình duyệt!");
     }
   };
@@ -93,45 +96,53 @@ function DuyetChi() {
     layDuLieu();
   }, []);
 
-  // Tự động lấy danh sách Số báo từ dữ liệu (vì số báo thì linh động thêm bớt)
   const dsSoBao = ["Tất cả", ...new Set(danhSachBaiViet.map((b) => b.soBao).filter(Boolean))];
 
-  // --- ÁP DỤNG BỘ LỌC VÀO DỮ LIỆU ---
+  // --- LỌC DỮ LIỆU ---
   const danhSachSauLoc = danhSachBaiViet.filter((bai) => {
     const matchKhuVuc = locKhuVuc === "Tất cả" || bai.tacGia?.khuVuc === locKhuVuc;
     const matchSoBao = locSoBao === "Tất cả" || bai.soBao === locSoBao;
     return matchKhuVuc && matchSoBao;
   });
 
-  // --- GOM BÀI SAU LỌC THÀNH TỪNG PHIẾU CHI (Sếp duyệt theo cụm) ---
+  // --- GOM BÀI & FIX LỖI TÍNH THUẾ CHUẨN NGHIỆP VỤ ---
   const groupedData = danhSachSauLoc.reduce((acc, bai) => {
     const idTG = bai.tacGia?._id;
     if (!idTG) return acc;
 
     if (!acc[idTG]) {
-      acc[idTG] = {
-        tacGia: bai.tacGia,
-        danhSachBai: [],
-        tongThucLanh: 0,
-      };
+      acc[idTG] = { tacGia: bai.tacGia, danhSachBai: [], tongGoc: 0 };
     }
     acc[idTG].danhSachBai.push(bai);
-
-    const tienGoc = Number(bai.tienNhuanBut) || 0;
-    const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0;
-    acc[idTG].tongThucLanh += tienGoc - tienThue;
+    acc[idTG].tongGoc += Number(bai.tienNhuanBut) || 0;
 
     return acc;
   }, {});
 
-  const danhSachGom = Object.values(groupedData);
+  const danhSachGom = Object.values(groupedData).map((nhom) => {
+    let thue = 0;
+    // Tính thuế trên Tổng đợt chi giống Kế toán
+    if (nhom.tongGoc >= 2000000) {
+      thue = nhom.tongGoc * 0.1;
+    }
+    return {
+      ...nhom,
+      tongThue: thue,
+      tongThucLanh: nhom.tongGoc - thue,
+    };
+  });
+
+  // HÀM ĐÓNG MỞ BẢNG CHI TIẾT
+  const toggleRow = (idTG) => {
+    setExpandedRows((prev) => (prev.includes(idTG) ? prev.filter((id) => id !== idTG) : [...prev, idTG]));
+  };
 
   // --- HÀNH ĐỘNG CỦA LÃNH ĐẠO ---
   const handleDuyetPhieu = async (nhom) => {
     if (window.confirm(`Sếp có chắc chắn DUYỆT CHI ${nhom.tongThucLanh.toLocaleString("vi-VN")}đ cho tác giả ${nhom.tacGia.hoTen}?`)) {
       try {
-// Thêm nguoiThaoTac vào cạnh trangThai
-await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt", nguoiThaoTac: tenNguoiDung })));        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
+        await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt", nguoiThaoTac: tenNguoiDung })));
+        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
         layDuLieu();
       } catch (error) {
         toast.error("Lỗi khi duyệt phiếu!");
@@ -142,7 +153,10 @@ await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000
   const handleTuChoi = async (nhom) => {
     if (window.confirm(`Sếp muốn TỪ CHỐI phiếu này và trả về cho Kế toán xử lý lại?`)) {
       try {
-        await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Chờ duyệt" })));
+        await Promise.all(
+          // Trả về Chờ duyệt và cũng lưu lại tên người từ chối
+          nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Chờ duyệt", nguoiThaoTac: tenNguoiDung })),
+        );
         toast.warning(`❌ Đã TRẢ LẠI phiếu của ${nhom.tacGia.hoTen} về phòng Kế toán!`);
         layDuLieu();
       } catch (error) {
@@ -153,28 +167,17 @@ await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000
 
   return (
     <div className="duyetchi-container">
-      {/* --- THANH CÔNG CỤ LỌC (FILTER BAR) --- */}
-      <div style={{ display: "flex", gap: "20px", marginBottom: "20px", backgroundColor: "#1e293b", padding: "15px", borderRadius: "10px", alignItems: "center" }}>
-        <h4 style={{ margin: 0, color: "#94a3b8" }}>🔍 Bộ Lọc Nhanh:</h4>
-
-        <select
-          value={locSoBao}
-          onChange={(e) => setLocSoBao(e.target.value)}
-          style={{ padding: "8px 15px", borderRadius: "8px", backgroundColor: "#0f172a", color: "white", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}
-        >
+      {/* THANH CÔNG CỤ LỌC */}
+      <div className="filter-bar">
+        <h4 className="filter-title">🔍 Bộ Lọc Nhanh:</h4>
+        <select value={locSoBao} onChange={(e) => setLocSoBao(e.target.value)} className="filter-select">
           {dsSoBao.map((sb) => (
             <option key={sb} value={sb}>
               {sb === "Tất cả" ? "-- Tất cả Số Báo --" : `Kỳ báo: ${sb}`}
             </option>
           ))}
         </select>
-
-        {/* THAY THẾ BỘ LỌC TỈNH THÀNH VÀO ĐÂY */}
-        <select
-          value={locKhuVuc}
-          onChange={(e) => setLocKhuVuc(e.target.value)}
-          style={{ padding: "8px 15px", borderRadius: "8px", backgroundColor: "#0f172a", color: "white", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}
-        >
+        <select value={locKhuVuc} onChange={(e) => setLocKhuVuc(e.target.value)} className="filter-select">
           <option value="Tất cả">-- Tất cả Tỉnh / Thành phố --</option>
           {danhSachTinhThanh.map((tinh, index) => (
             <option key={index} value={tinh}>
@@ -182,17 +185,17 @@ await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000
             </option>
           ))}
         </select>
-
-        <div style={{ marginLeft: "auto", color: "#38bdf8", fontWeight: "bold" }}>Đang hiển thị: {danhSachGom.length} Phiếu Trình</div>
+        <div className="filter-count">Đang hiển thị: {danhSachGom.length} Phiếu Trình</div>
       </div>
 
-      <div style={{ overflowX: "auto", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+      <div className="table-wrapper">
         <table className="bang-danh-sach">
           <thead>
             <tr>
-              <th>Người Thụ Hưởng (Tác Giả)</th>
+              <th>Người Thụ Hưởng</th>
               <th>Khu Vực</th>
               <th>Số Lượng Bài</th>
+              <th className="text-red">Thuế TNCN</th>
               <th style={{ color: "#facc15" }}>Số Tiền Đề Nghị Chi</th>
               <th>Hành Động Của Sếp</th>
             </tr>
@@ -200,45 +203,60 @@ await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000
           <tbody>
             {danhSachGom.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "16px" }}>
+                <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "16px" }}>
                   Hiện tại không có hồ sơ nào cần Sếp phải duyệt.
                 </td>
               </tr>
             ) : (
               danhSachGom.map((nhom) => (
-                <tr key={nhom.tacGia._id}>
-                  <td style={{ fontWeight: "bold", fontSize: "16px", color: "#e2e8f0" }}>{nhom.tacGia.hoTen}</td>
-                  <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
-                  <td>
-                    <span style={{ backgroundColor: "#334155", padding: "4px 8px", borderRadius: "5px", fontSize: "13px" }}>Chi tiết: {nhom.danhSachBai.length} bài</span>
-                  </td>
-                  <td style={{ color: "#facc15", fontWeight: "bold", fontSize: "18px" }}>{nhom.tongThucLanh.toLocaleString("vi-VN")}đ</td>
-                  <td>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      <button
-                        onClick={() => handleDuyetPhieu(nhom)}
-                        style={{
-                          background: "linear-gradient(90deg, #10b981 0%, #059669 100%)",
-                          color: "white",
-                          border: "none",
-                          padding: "8px 15px",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                          fontWeight: "bold",
-                          boxShadow: "0 4px 10px rgba(16, 185, 129, 0.3)",
-                        }}
-                      >
-                        ✅ DUYỆT CHI
+                <span key={nhom.tacGia._id} style={{ display: "contents" }}>
+                  {/* DÒNG CHÍNH MÀN HÌNH LÃNH ĐẠO */}
+                  <tr className={expandedRows.includes(nhom.tacGia._id) ? "row-expanded" : ""}>
+                    <td className="text-bold">{nhom.tacGia.hoTen}</td>
+                    <td className="text-italic">{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
+                    <td>
+                      <button onClick={() => toggleRow(nhom.tacGia._id)} className="btn-toggle">
+                        {expandedRows.includes(nhom.tacGia._id) ? "🔽 Đóng" : "▶️ Xem chi tiết"} ({nhom.danhSachBai.length} bài)
                       </button>
-                      <button
-                        onClick={() => handleTuChoi(nhom)}
-                        style={{ background: "#ef4444", color: "white", border: "none", padding: "8px 15px", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}
-                      >
-                        ❌ TỪ CHỐI
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    {/* Bổ sung cột Thuế để Sếp dễ đối chiếu */}
+                    <td className="text-red">{nhom.tongThue > 0 ? `-${nhom.tongThue.toLocaleString("vi-VN")}đ` : "0đ"}</td>
+                    <td className="text-highlight">{nhom.tongThucLanh.toLocaleString("vi-VN")}đ</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button onClick={() => handleDuyetPhieu(nhom)} className="btn-approve">
+                          ✅ DUYỆT CHI
+                        </button>
+                        <button onClick={() => handleTuChoi(nhom)} className="btn-reject">
+                          ❌ TỪ CHỐI
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* BẢNG CON CHI TIẾT KHI XỔ RA */}
+                  {expandedRows.includes(nhom.tacGia._id) && (
+                    <tr className="sub-table-row">
+                      <td colSpan="6" className="sub-table-cell">
+                        <div className="sub-table-content">
+                          <h4 className="sub-table-title">Chi tiết các bài báo trình duyệt:</h4>
+                          <table className="sub-table">
+                            <tbody>
+                              {nhom.danhSachBai.map((bai, idx) => (
+                                <tr key={bai._id}>
+                                  <td className="col-index">{idx + 1}.</td>
+                                  <td className="col-name">{bai.tenBaiViet || bai.tenBai || bai.tieuDe || "Chưa cập nhật tên bài"}</td>
+                                  <td className="col-issue">Kỳ: {bai.soBao || "N/A"}</td>
+                                  <td className="col-money">{Number(bai.tienNhuanBut).toLocaleString("vi-VN")}đ</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </span>
               ))
             )}
           </tbody>

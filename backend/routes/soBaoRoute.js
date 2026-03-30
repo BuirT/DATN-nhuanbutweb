@@ -13,30 +13,29 @@ router.get("/danh-sach", async (req, res) => {
   }
 });
 
-// --- 2. THÊM SỐ BÁO MỚI ---
+// THÊM SỐ BÁO MỚI
 router.post("/them", async (req, res) => {
   try {
-    const { maSoBao, tenSoBao, ngayPhatHanh, loaiBao, nganSach } = req.body;
-    
-    // Kiểm tra xem mã Số Báo này đã có ai tạo chưa
-    const daTonTai = await SoBao.findOne({ maSoBao });
-    if (daTonTai) {
-      return res.status(400).json({ message: "Mã số báo này đã tồn tại!" });
-    }
+    // 1. Nhận đúng tên hàng từ Frontend gửi xuống
+    const { maSoBao, tenSoBao, ngayPhatHanh, loaiBao } = req.body;
 
+    // 2. Bỏ vào khuôn mới
     const soBaoMoi = new SoBao({
       maSoBao,
       tenSoBao,
       ngayPhatHanh,
       loaiBao,
-      nganSach: Number(nganSach) || 0 // Nhận số tiền ngân sách từ Frontend gõ vào
     });
 
+    // 3. Lưu vào Két sắt
     await soBaoMoi.save();
-    res.status(201).json({ message: "Thêm số báo thành công", data: soBaoMoi });
+    res.status(201).json(soBaoMoi);
   } catch (error) {
-    console.error("Lỗi thêm số báo:", error);
-    res.status(500).json({ message: "Lỗi Server", error: error.message });
+    // Nếu bị trùng Mã Số Báo thì báo lỗi đẹp
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Mã Số Báo này đã tồn tại!" });
+    }
+    res.status(500).json({ message: "Lỗi Server khi thêm Số Báo" });
   }
 });
 
@@ -49,7 +48,7 @@ router.put("/:id", async (req, res) => {
     const soBaoCapNhat = await SoBao.findByIdAndUpdate(
       id,
       { tenSoBao, ngayPhatHanh, loaiBao, nganSach: Number(nganSach) || 0 },
-      { new: true } // Yêu cầu trả về dữ liệu mới sau khi đã sửa xong
+      { new: true }, // Yêu cầu trả về dữ liệu mới sau khi đã sửa xong
     );
 
     if (!soBaoCapNhat) {

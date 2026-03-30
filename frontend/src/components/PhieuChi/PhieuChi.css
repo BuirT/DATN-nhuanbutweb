@@ -1,64 +1,278 @@
+/* --- BỐ CỤC CHUNG --- */
 .phieuchi-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* --- TAB ĐIỀU HƯỚNG --- */
+.tab-container {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-.highlight-box {
-  border: 2px dashed #facc15;
-  background-color: rgba(250, 204, 21, 0.05);
-  animation: slideDown 0.4s ease-out;
+.btn-tab {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: #1e293b;
+  color: #94a3b8;
 }
 
-@keyframes slideDown {
+.btn-tab.active-blue {
+  background-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-tab.active-green {
+  background-color: #10b981;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+/* --- BỘ LỌC TÌM KIẾM --- */
+.filter-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-select {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #0f172a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+/* --- FORM LẬP PHIẾU --- */
+.form-lap-phieu {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+}
+
+.form-lap-phieu.border-blue {
+  border: 1px solid #3b82f6;
+}
+.form-lap-phieu.border-green {
+  border: 1px solid #10b981;
+}
+
+.form-title-blue {
+  color: #38bdf8;
+  margin-top: 0;
+}
+.form-title-green {
+  color: #34d399;
+  margin-top: 0;
+}
+
+.text-light {
+  color: #e2e8f0;
+}
+.text-highlight {
+  color: #facc15;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.form-group-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.input-lydo {
+  flex: 2;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #0f172a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-action-group {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-submit {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit.blue {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+}
+.btn-submit.green {
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  background-color: #64748b;
+}
+
+/* --- BẢNG DỮ LIỆU CHÍNH --- */
+.table-section-title {
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.phieuchi-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.phieuchi-table thead {
+  background-color: #0f172a;
+}
+.phieuchi-table th {
+  padding: 15px;
+  color: #94a3b8;
+  text-align: left;
+}
+.phieuchi-table td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.row-expanded {
+  background-color: rgba(56, 189, 248, 0.05);
+}
+.text-bold {
+  font-weight: bold;
+  font-size: 15px;
+  color: #e2e8f0;
+}
+.text-italic {
+  font-style: italic;
+  color: #94a3b8;
+}
+.badge-count {
+  background-color: #334155;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.text-red {
+  color: #f87171;
+}
+.text-green-bold {
+  color: #34d399;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Nút trong bảng */
+.btn-toggle {
+  background-color: #334155;
+  color: #38bdf8;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  border: 1px solid #475569;
+  cursor: pointer;
+}
+
+.btn-process {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #94a3b8;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-process:hover {
+  background-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* --- BẢNG CON (XỔ RA CHI TIẾT) --- */
+.sub-table-row {
+  background-color: #0f172a;
+}
+.sub-table-cell {
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.sub-table-content {
+  border-left: 3px solid #38bdf8;
+  padding-left: 15px;
+}
+.sub-table-title {
+  color: #94a3b8;
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.sub-table tr {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+.sub-table td {
+  padding: 8px 0;
+}
+
+.col-index {
+  color: #cbd5e1;
+  width: 5%;
+}
+.col-name {
+  color: #e2e8f0;
+  width: 55%;
+}
+.col-issue {
+  color: #94a3b8;
+  width: 20%;
+}
+.col-money {
+  color: #facc15;
+  width: 20%;
+  text-align: right;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.badge-so-luong {
-  background-color: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 13px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.btn-lap-phieu {
-  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
-  transition: 0.3s;
-}
-
-.btn-lap-phieu:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(234, 179, 8, 0.5);
-}
-
-.btn-xuat-phieu {
-  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.btn-xuat-phieu:hover {
-  filter: brightness(1.2);
 }

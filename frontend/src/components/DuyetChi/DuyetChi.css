@@ -1,90 +1,189 @@
-/* --- DUYETCHI.CSS - GIAO DIỆN LÃNH ĐẠO --- */
 .duyetchi-container {
-  padding: 10px;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.bang-duyet {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background-color: #121827;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.filter-bar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  background-color: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  align-items: center;
 }
 
-.bang-duyet thead th {
+.filter-title {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.filter-select {
+  padding: 10px 15px;
+  border-radius: 8px;
   background-color: #0f172a;
-  color: #00f2fe;
-  padding: 18px 15px;
-  font-size: 14px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.filter-count {
+  margin-left: auto;
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.bang-danh-sach {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bang-danh-sach thead {
+  background-color: #0f172a;
+}
+
+.bang-danh-sach th {
+  padding: 15px;
+  text-align: left;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bang-danh-sach td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-bold {
+  font-weight: bold;
+  font-size: 16px;
+  color: #e2e8f0;
+}
+.text-italic {
+  font-style: italic;
+  color: #94a3b8;
+}
+.text-highlight {
+  color: #facc15;
+  font-weight: bold;
+  font-size: 18px;
+}
+.text-red {
+  color: #f87171;
+}
+
+.btn-toggle {
+  background-color: #334155;
+  color: #38bdf8;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  border: 1px solid #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-approve {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-reject {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.btn-approve:hover,
+.btn-reject:hover {
+  transform: scale(1.05);
+}
+
+/* Row Styling */
+.row-expanded {
+  background-color: rgba(56, 189, 248, 0.05);
+}
+
+/* Sub Table */
+.sub-table-row {
+  background-color: #0f172a;
+}
+.sub-table-cell {
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.sub-table-content {
+  border-left: 3px solid #38bdf8;
+  padding-left: 15px;
+}
+.sub-table-title {
+  color: #94a3b8;
+  margin: 0 0 10px 0;
+  font-size: 13px;
   text-transform: uppercase;
 }
 
-.bang-duyet tbody td {
-  padding: 16px 15px;
+.sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.sub-table tr {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+.sub-table td {
+  padding: 8px 0;
+}
+
+.col-index {
+  color: #cbd5e1;
+  width: 5%;
+}
+.col-name {
   color: #e2e8f0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  vertical-align: middle;
+  width: 55%;
 }
-
-.bang-duyet tbody tr:hover {
-  background-color: rgba(0, 242, 254, 0.03); /* Sáng nhẹ màu cyan khi rê chuột */
-}
-
-/* Số tiền - Phóng to và tô màu đỏ/cam nổi bật */
-.bang-duyet td[style*="color: red"] {
-  color: #f43f5e !important;
-  font-size: 17px;
-  text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
-}
-
-/* Nhãn Trạng Thái (Pill Badge) */
-.badge-cho {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.badge-xong {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-/* Nút Hành Động */
-.btn-duyet {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-  transition: all 0.3s ease;
-}
-
-.btn-duyet:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-}
-
-.btn-da-duyet {
-  background-color: #334155;
+.col-issue {
   color: #94a3b8;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: not-allowed;
+  width: 20%;
+}
+.col-money {
+  color: #facc15;
+  width: 20%;
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -7,11 +7,11 @@ const soBaoSchema = new mongoose.Schema(
       required: true,
       unique: true, // Đảm bảo không bị trùng mã số báo
     },
-    tenBao: {
+    tenSoBao: {
       type: String,
       required: true,
     },
-    ngayRa: {
+    ngayPhatHanh: {
       type: Date,
       required: true,
     },

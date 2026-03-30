@@ -9,8 +9,8 @@ function SoBao() {
 
   const [formData, setFormData] = useState({
     maSoBao: "",
-    tenBao: "",
-    ngayRa: "",
+    tenSoBao: "", // Sửa thành tên mới
+    ngayPhatHanh: "", // Sửa thành tên mới
     loaiBao: "Báo In",
   });
 
@@ -47,15 +47,15 @@ function SoBao() {
     setIsEditing(bao._id);
     setFormData({
       maSoBao: bao.maSoBao,
-      tenBao: bao.tenBao,
-      ngayRa: bao.ngayRa ? bao.ngayRa.substring(0, 10) : "", // Cắt lấy ngày YYYY-MM-DD
+      tenSoBao: bao.tenSoBao,
+      ngayPhatHanh: bao.ngayPhatHanh ? bao.ngayPhatHanh.substring(0, 10) : "", // Cắt lấy ngày YYYY-MM-DD
       loaiBao: bao.loaiBao || "Báo In",
     });
   };
 
   const handleHuySua = () => {
     setIsEditing(null);
-    setFormData({ maSoBao: "", tenBao: "", ngayRa: "", loaiBao: "Báo In" });
+    setFormData({ maSoBao: "", tenSoBao: "", ngayPhatHanh: "", loaiBao: "Báo In" });
   };
 
   const handleSubmit = async (e) => {
@@ -81,10 +81,10 @@ function SoBao() {
         <h3 style={{ color: isEditing ? "#2196F3" : "#4facfe" }}>{isEditing ? "🛠️ Sửa Thông Tin Số Báo" : "📰 Phát Hành Số Báo Mới"}</h3>
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="maSoBao" value={formData.maSoBao} onChange={handleChange} placeholder="Mã Số Báo (VD: B01)" required />
-          <input type="text" name="tenBao" value={formData.tenBao} onChange={handleChange} placeholder="Tên Số Báo (VD: Tuổi Trẻ Cuối Tuần)" required style={{ flex: 2 }} />
+          <input type="text" name="tenSoBao" value={formData.tenSoBao} onChange={handleChange} placeholder="Tên Số Báo (VD: Tuổi Trẻ Cuối Tuần)" required style={{ flex: 2 }} />
 
           <div style={{ display: "flex", gap: "15px", flex: 2 }}>
-            <input type="date" name="ngayRa" value={formData.ngayRa} onChange={handleChange} required style={{ flex: 1 }} title="Ngày Phát Hành" />
+            <input type="date" name="ngayPhatHanh" value={formData.ngayPhatHanh} onChange={handleChange} required style={{ flex: 1 }} title="Ngày Phát Hành" />
             <select name="loaiBao" value={formData.loaiBao} onChange={handleChange} style={{ flex: 1 }}>
               <option value="Báo In">Báo In</option>
               <option value="Báo Điện Tử">Báo Điện Tử</option>
@@ -127,8 +127,8 @@ function SoBao() {
             danhSachSoBao.map((bao) => (
               <tr key={bao._id}>
                 <td style={{ fontWeight: "bold", color: "#00f2fe" }}>{bao.maSoBao}</td>
-                <td>{bao.tenBao}</td>
-                <td>{new Date(bao.ngayRa).toLocaleDateString("vi-VN")}</td>
+                <td>{bao.tenSoBao}</td>
+                <td>{new Date(bao.ngayPhatHanh).toLocaleDateString("vi-VN")}</td>
                 <td>
                   <span className="badge-loai">{bao.loaiBao}</span>
                 </td>
