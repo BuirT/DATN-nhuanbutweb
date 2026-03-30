@@ -61,7 +61,7 @@ function NhuanBut() {
     if (window.confirm("Đồng chí có chắc chắn muốn xóa bài viết này khỏi hệ thống?")) {
       try {
         await axios.delete(`http://localhost:5000/api/nhuanbut/${id}`);
-        toast.success("Đã xóa bài viết thành công! 🗑️");
+        toast.success("Đã chuyển bài viết vào thùng rác/Lưu trữ! 🗑️");
         layDuLieu();
       } catch (error) {
         toast.error("Lỗi khi xóa bài viết! ❌");

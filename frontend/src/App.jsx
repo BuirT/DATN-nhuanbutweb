@@ -10,6 +10,7 @@ import Login from "./components/Login/Login";
 import SoBao from "./components/SoBao/SoBao";
 import PhieuChi from "./components/PhieuChi/PhieuChi";
 import TaiKhoan from "./components/TaiKhoan/TaiKhoan";
+import CauHinh from "./components/CauHinh/CauHinh";
 import "./App.css";
 
 function App() {
@@ -83,11 +84,16 @@ function App() {
             )}
 
             {isAdmin && (
-              <li>
-                <Link to="/quan-ly-tai-khoan">Quản Lý Tài Khoản</Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/quan-ly-tai-khoan">Quản Lý Tài Khoản</Link>
+                </li>
+                {/* THÊM DÒNG NÀY NÈ ANH */}
+                <li>
+                  <Link to="/cau-hinh">Cấu Hình Thuế</Link>
+                </li>
+              </>
             )}
-
             {/* Gắn class riêng cho khu vực người dùng để CSS dễ bắt */}
             <li className="user-info-item">
               <span className="user-greeting">
@@ -114,7 +120,13 @@ function App() {
 
             {isKeToan && <Route path="/phieu-chi" element={<PhieuChi />} />}
             {isLanhDao && <Route path="/duyet-chi" element={<DuyetChi />} />}
-            {isAdmin && <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />}
+           {isAdmin && (
+              <>
+                <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />
+                {/* THÊM DÒNG NÀY NỮA NÈ */}
+                <Route path="/cau-hinh" element={<CauHinh />} />
+              </>
+            )}
 
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

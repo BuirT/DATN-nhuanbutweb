@@ -1,0 +1,115 @@
+/* --- KHUNG BAO NGOÀI --- */
+.cauhinh-container {
+  max-width: 800px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* --- PHẦN TIÊU ĐỀ HƯỚNG DẪN --- */
+.cauhinh-header {
+  margin-bottom: 20px;
+  border: 1px solid #38bdf8;
+  background-color: rgba(56, 189, 248, 0.05);
+  padding: 15px 20px;
+  border-radius: 8px;
+}
+
+.cauhinh-title {
+  color: #38bdf8;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+}
+
+.cauhinh-desc {
+  color: #cbd5e1;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* --- KHUNG FORM CẤU HÌNH --- */
+.cauhinh-card {
+  background-color: #1e293b;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  max-width: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cauhinh-card-title {
+  color: #facc15;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 18px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+/* --- CÁC Ô NHẬP LIỆU --- */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background-color: #0f172a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+  background-color: #1e293b;
+}
+
+.form-hint {
+  color: #64748b;
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* --- NÚT LƯU CẤU HÌNH --- */
+.btn-submit-cauhinh {
+  width: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn-submit-cauhinh:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Hiệu ứng mượt mà khi mở trang */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

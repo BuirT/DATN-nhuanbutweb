@@ -34,7 +34,7 @@ const thongKeRoute = require("./routes/thongKeRoute");
 const authRoute = require("./routes/authRoute");
 const soBaoRoute = require("./routes/soBaoRoute");
 const phieuChiRoute = require('./routes/phieuChiRoute');
-
+app.use("/api/cauhinh", require("./routes/cauHinhRoute"));
 app.use("/api/tacgia", tacGiaRoute);
 app.use("/api/nhuanbut", nhuanButRoute);
 app.use("/api/duyetchi", duyetChiRoute);
