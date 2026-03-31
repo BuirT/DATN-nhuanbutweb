@@ -1,145 +1,134 @@
-@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap");
+/* ==========================================
+   1. RESET & KHUNG XƯƠNG CHÍNH (CHỐNG VỠ GIAO DIỆN)
+   ========================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: "Public Sans", sans-serif;
-  background-color: #0c111b;
-  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden; /* Cấm cuộn toàn trang, tránh bị lún khung */
+  background-color: #0f172a;
 }
 
-/* 1. THANH NAVBAR TRÀN VIỀN */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  padding: 10px 40px;
-  position: fixed;
+.app-layout {
+  position: relative;
+  width: 100vw;
+  height: 100vh; /* Bắt buộc 100vh, không dùng min-height */
+  overflow: hidden;
+  /* Thêm transition để lật Sáng/Tối mượt như lụa, không bị chớp mắt */
+  transition:
+    filter 0.5s ease,
+    background-color 0.5s ease;
+}
+
+/* --- LỚP NỀN ÁNH SÁNG ĐẠI DƯƠNG SÂU THẲM (OCEANIC PREMIUM) --- */
+.bg-glow-effect {
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 2000;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* 2. LOGO TÒA SOẠN */
-.logo {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
-  cursor: pointer;
-}
-
-/* 3. CÁC LIÊN KẾT ĐIỀU HƯỚNG */
-.nav-links {
-  list-style: none;
-  display: flex;
-  flex: 1; /* Chiếm hết phần không gian còn lại */
-  gap: 15px;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-}
-
-.nav-links li a {
-  color: #94a3b8;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 10px 18px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: relative;
-  display: inline-block;
-}
-
-.nav-links li a:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Hiệu ứng gạch chân chạy mượt mà */
-.nav-links li a::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
+  right: 0;
   bottom: 0;
-  left: 50%;
-  background-color: #00f2fe;
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-  box-shadow: 0 0 8px rgba(0, 242, 254, 0.8); /* Thêm tí sáng cho ngầu */
+  z-index: 0;
+  /* Tone màu Xanh lam đậm pha Slate, sang trọng và dịu mắt hơn màu Tím cũ */
+  background: radial-gradient(150% 150% at 50% 110%, #1e3a8a 0%, #0f172a 50%, #020617 100%);
 }
 
-.nav-links li a:hover::after {
-  width: 60%;
+/* ==========================================
+   2. ÉP KHUÔN 2 CỘT (SIDEBAR & NỘI DUNG)
+   ========================================== */
+.main-content-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: stretch; /* Ép Sidebar và Nội dung căng đều từ trên xuống dưới */
 }
 
-/* 4. KHU VỰC THÔNG TIN NGƯỜI DÙNG & NÚT ĐĂNG XUẤT */
-.user-info-item {
-  margin-left: auto; /* Tự động đẩy toàn bộ khu vực này sát lề phải */
+/* Khu vực chứa Header và Trang hiển thị */
+.page-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start !important; /* LỆNH BÀI TỐI THƯỢNG: Ép Header dính chặt lên nóc nhà */
+}
+
+/* Header ngang - Hiệu ứng Kính trong vắt (Glassmorphism) sắc nét hơn */
+.top-header {
+  height: 70px;
+  flex-shrink: 0;
+  background-color: rgba(15, 23, 42, 0.4); /* Kính đen mờ thanh lịch */
+  backdrop-filter: blur(16px); /* Tăng độ mờ ảo */
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Viền sáng nhẹ cho nổi bật */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ tách biệt nội dung */
   display: flex;
   align-items: center;
-  gap: 20px;
+  padding: 0 20px;
+  gap: 15px;
 }
 
-.user-greeting {
-  color: #facc15;
-  font-size: 14px;
-}
-
-.user-greeting strong {
-  color: #ffffff;
-}
-
-.btn-logout {
-  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.btn-logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
-}
-
-/* 5. KHU VỰC NỘI DUNG CHÍNH */
-.main-content {
-  margin-top: 80px;
+/* Khu vực hiển thị bảng biểu, thống kê */
+.content-area {
+  flex: 1;
   padding: 30px;
-  width: 100%;
-  box-sizing: border-box;
-  animation: fadeInDown 0.6s ease-out;
+  overflow-y: auto; /* Chỉ cho phép cuộn ở khu vực này */
+  background-color: transparent;
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Scrollbar (Thanh cuộn) tùy chỉnh cho đẹp mắt */
+.content-area::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.content-area::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+.content-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ==========================================
+   3. CHẾ ĐỘ SÁNG TỐI (LIGHT/DARK MODE)
+   ========================================== */
+.light-mode {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #f1f5f9; /* Màu nền trắng xám Slate cực kỳ dịu mắt cho ban ngày */
+}
+
+.light-mode img,
+.light-mode canvas,
+.light-mode .no-invert {
+  /* Lật lại màu cho biểu đồ và hình ảnh */
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Nút bấm mặt trời/mặt trăng (Chỉnh lại độ nảy) */
+.btn-theme-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s;
+  margin-left: auto; /* Tự động đẩy nút này ra tít bên phải */
+}
+
+.btn-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15) rotate(15deg); /* Thêm hiệu ứng xoay nhẹ lúc trỏ chuột */
 }

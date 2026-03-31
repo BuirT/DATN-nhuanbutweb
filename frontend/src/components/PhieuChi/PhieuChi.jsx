@@ -154,7 +154,7 @@ function PhieuChi() {
     e.preventDefault();
     try {
       await Promise.all(isLapping.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Trình Lãnh Đạo", nguoiThaoTac: tenNguoiDung })));
-      toast.success("📤 Đã lập phiếu trình Lãnh Đạo thành công!");
+      toast.success("Đã lập phiếu trình Lãnh Đạo thành công!");
       handleHuyForm();
       layDuLieu();
     } catch (error) {
@@ -179,7 +179,7 @@ function PhieuChi() {
 
       await axios.post("http://localhost:5000/api/phieuchi/tao-phieu", payload).catch(() => console.log("Lưu ý: Chưa mở API lưu Phiếu Chi ở Backend"));
 
-      toast.success("✅ Xuất quỹ và Tất toán thành công!");
+      toast.success("Xuất quỹ và Tất toán thành công!");
       handleHuyForm();
       layDuLieu();
     } catch (error) {
@@ -236,7 +236,7 @@ function PhieuChi() {
       {/* FORM LẬP PHIẾU HIỂN THỊ KHI BẤM NÚT */}
       {isLapping && (
         <div className={`form-lap-phieu ${tabHienTai === "ChoTrinhDuyet" ? "border-blue" : "border-green"}`}>
-          <h3 className={tabHienTai === "ChoTrinhDuyet" ? "form-title-blue" : "form-title-green"}>{tabHienTai === "ChoTrinhDuyet" ? "📤 LẬP PHIẾU TRÌNH DUYỆT" : "🖨️ XUẤT PHIẾU THANH TOÁN"}</h3>
+          <h3 className={tabHienTai === "ChoTrinhDuyet" ? "form-title-blue" : "form-title-green"}>{tabHienTai === "ChoTrinhDuyet" ? "LẬP PHIẾU TRÌNH DUYỆT" : "XUẤT PHIẾU THANH TOÁN"}</h3>
           <p className="text-light">
             Tác giả thụ hưởng: <strong style={{ fontSize: "16px" }}>{isLapping.tacGia.hoTen}</strong> ({isLapping.danhSachBai.length} bài viết)
           </p>
@@ -248,8 +248,8 @@ function PhieuChi() {
             {tabHienTai === "ChoThanhToan" && (
               <div className="form-group-row">
                 <select name="hinhThuc" value={formData.hinhThuc} onChange={handleChange} className="filter-select">
-                  <option value="Chuyển khoản">📱 Chuyển khoản (CK)</option>
-                  <option value="Tiền mặt">💵 Tiền mặt (TM)</option>
+                  <option value="Chuyển khoản">Chuyển khoản (CK)</option>
+                  <option value="Tiền mặt">Tiền mặt (TM)</option>
                 </select>
                 <input type="text" name="lyDo" value={formData.lyDo} onChange={handleChange} placeholder="Nhập lý do chi tiền..." className="input-lydo" required />
               </div>
@@ -298,7 +298,7 @@ function PhieuChi() {
                     <td className="text-italic">{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
                     <td>
                       <button onClick={() => toggleRow(nhom.tacGia._id)} className="btn-toggle">
-                        {expandedRows.includes(nhom.tacGia._id) ? "🔽 Đóng" : "▶️ Xem chi tiết"} ({nhom.danhSachBai.length} bài)
+                        {expandedRows.includes(nhom.tacGia._id) ? "Đóng" : "Xem chi tiết"} ({nhom.danhSachBai.length} bài)
                       </button>
                     </td>
                     <td className="text-red">{nhom.tongThue > 0 ? `-${nhom.tongThue.toLocaleString("vi-VN")}đ` : "0đ"}</td>

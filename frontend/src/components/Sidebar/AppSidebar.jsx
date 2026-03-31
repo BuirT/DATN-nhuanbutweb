@@ -1,9 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { 
-  Home, Users, Newspaper, CircleDollarSign, 
-  FileCheck, ShieldCheck, UserCog, Settings, LogOut
-} from "lucide-react";
-import "./AppSidebar.css"; 
+import { Home, Users, Newspaper, CircleDollarSign, FileCheck, ShieldCheck, UserCog, Settings, LogOut } from "lucide-react";
+import "./AppSidebar.css";
 
 export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
   const location = useLocation();
@@ -19,20 +16,18 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
 
   return (
     <div className={`sidebar-container ${isOpen ? "sidebar-expanded" : "sidebar-collapsed"}`}>
-      
       {/* HEADER LOGO */}
       <div className="sidebar-header">
         <div className="logo-box">TS</div>
         <div className="logo-text">
           <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "16px", textTransform: "uppercase", letterSpacing: "1px" }}>Tòa Soạn Báo</span>
-          
         </div>
       </div>
 
       {/* MENU CHÍNH */}
       <div className="sidebar-menu">
         <div className="menu-label">Nghiệp Vụ</div>
-        
+
         <Link to="/" className={`menu-item ${location.pathname === "/" ? "active" : ""}`}>
           <Home size={20} />
           {isOpen && <span>Báo Cáo Thống Kê</span>}
@@ -71,7 +66,9 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
 
         {isAdmin && (
           <>
-            <div className="menu-label" style={{ marginTop: "15px" }}>Hệ Thống</div>
+            <div className="menu-label" style={{ marginTop: "15px" }}>
+              Hệ Thống
+            </div>
             <Link to="/quan-ly-tai-khoan" className={`menu-item ${location.pathname === "/quan-ly-tai-khoan" ? "active" : ""}`}>
               <UserCog size={20} />
               {isOpen && <span>Quản Lý Tài Khoản</span>}
@@ -98,7 +95,6 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
           {isOpen && <span>Đăng Xuất</span>}
         </button>
       </div>
-
     </div>
   );
 }

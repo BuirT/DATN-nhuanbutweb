@@ -58,13 +58,13 @@ function NhuanBut() {
 
   // --- CÁC HÀM THAO TÁC CRUD ---
   const handleXoa = async (id) => {
-    if (window.confirm("Đồng chí có chắc chắn muốn xóa bài viết này khỏi hệ thống?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này khỏi hệ thống?")) {
       try {
         await axios.delete(`http://localhost:5000/api/nhuanbut/${id}`);
         toast.success("Đã chuyển bài viết vào thùng rác/Lưu trữ! 🗑️");
         layDuLieu();
       } catch (error) {
-        toast.error("Lỗi khi xóa bài viết! ❌");
+        toast.error("Lỗi khi xóa bài viết!");
       }
     }
   };
@@ -98,15 +98,15 @@ function NhuanBut() {
     try {
       if (isEditing) {
         await axios.put(`http://localhost:5000/api/nhuanbut/${isEditing}`, formData);
-        toast.success("Cập nhật bài viết thành công! ✨");
+        toast.success("Cập nhật bài viết thành công!");
       } else {
         await axios.post("http://localhost:5000/api/nhuanbut/nhap-bai", formData);
-        toast.success("Thêm bài viết mới thành công! 📝");
+        toast.success("Thêm bài viết mới thành công!");
       }
       handleHuySua();
       layDuLieu();
     } catch (error) {
-      toast.error("Có lỗi xảy ra, vui lòng kiểm tra lại dữ liệu! ⚠️");
+      toast.error("Có lỗi xảy ra, vui lòng kiểm tra lại dữ liệu!");
     }
   };
 
@@ -131,7 +131,7 @@ function NhuanBut() {
     <div className="nhuanbut-container">
       {/* KHU VỰC FORM NHẬP LIỆU */}
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#38bdf8" : "#ffffff", borderLeft: "4px solid #38bdf8", paddingLeft: "10px" }}>{isEditing ? "🛠️ Sửa Thông Tin Bài Viết" : "📝 Nhập Nhuận Bút & Tính Thuế"}</h3>
+        <h3 style={{ color: isEditing ? "#38bdf8" : "#ffffff", borderLeft: "4px solid #38bdf8", paddingLeft: "10px" }}>{isEditing ? "Sửa Thông Tin Bài Viết" : "Nhập Nhuận Bút & Tính Thuế"}</h3>
 
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="tenBai" value={formData.tenBai} onChange={handleChange} placeholder="Tên bài viết" required style={{ width: "100%", marginBottom: "15px" }} />
@@ -157,7 +157,7 @@ function NhuanBut() {
           </div>
 
           <div style={{ display: "flex", gap: "15px", width: "100%", alignItems: "center", marginBottom: "15px" }}>
-            <input type="number" name="tienNhuanBut" value={formData.tienNhuanBut} onChange={handleChange} placeholder="💰 Nhập Tiền Gốc (VNĐ)" required min="0" style={{ flex: 1 }} />
+            <input type="number" name="tienNhuanBut" value={formData.tienNhuanBut} onChange={handleChange} placeholder="Nhập Tiền Gốc (VNĐ)" required min="0" style={{ flex: 1 }} />
 
             <div
               style={{
@@ -215,7 +215,7 @@ function NhuanBut() {
               </div>
               {isVuotNganSach && (
                 <div style={{ marginTop: "10px", color: "#f87171", fontWeight: "bold", display: "flex", alignItems: "center", gap: "8px" }}>
-                  🚨 TÍT TÍT! CẢNH BÁO: Đã vượt tổng ngân sách. Hệ thống tạm khóa nút Lưu!
+                  🚨 CẢNH BÁO: Đã vượt tổng ngân sách. Hệ thống tạm khóa nút Lưu!
                 </div>
               )}
             </div>
@@ -245,9 +245,9 @@ function NhuanBut() {
 
       {/* KHU VỰC BẢNG HIỂN THỊ CÓ KÈM NÚT IN ẤN */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "30px", marginBottom: "15px" }}>
-        <h3 style={{ color: "#e2e8f0", margin: 0 }}>Bảng Kê Chi Tiết Nhuận Bút</h3>
+        <h3 style={{ color: "#fcfcfc", margin: 0 }}>Bảng Kê Chi Tiết Nhuận Bút</h3>
         <button type="button" className="btn-in-an" onClick={() => window.print()}>
-          🖨️ In Bảng Kê Trình Ký
+          In Bảng Kê Trình Ký
         </button>
       </div>
 

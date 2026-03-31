@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import * as XLSX from "xlsx"; // 👉 IMPORT THƯ VIỆN EXCEL
+import * as XLSX from "xlsx"; // IMPORT THƯ VIỆN EXCEL
 import "./ThongKe.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -35,10 +35,10 @@ function ThongKe() {
     const thu = thuArr[date.getDay()];
     const gioPhutGiay = date.toLocaleTimeString("vi-VN", { hour12: false });
     const ngayThangNam = date.toLocaleDateString("vi-VN");
-    return `${thu}, ${ngayThangNam} | ⏱️ ${gioPhutGiay}`;
+    return `${thu}, ${ngayThangNam} | ${gioPhutGiay}`;
   };
 
-  // 👉 HÀM XUẤT EXCEL THẦN THÁNH
+  // HÀM XUẤT EXCEL
   const handleXuatExcel = () => {
     if (danhSachBaiViet.length === 0) {
       toast.warning("Chưa có dữ liệu để xuất báo cáo!");
@@ -71,7 +71,7 @@ function ThongKe() {
 
     // 3. Tự động tải về máy
     XLSX.writeFile(workbook, `Bao_Cao_Toa_Soan_${new Date().getTime()}.xlsx`);
-    toast.success("📥 Xuất file Excel thành công! Đã tải về máy.");
+    toast.success("Xuất file Excel thành công! Đã tải về máy.");
   };
 
   // --- THUẬT TOÁN TÍNH TOÁN (Giữ nguyên) ---
@@ -140,7 +140,7 @@ function ThongKe() {
       <div className="thongke-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "20px" }}>
         <div>
           <h2 className="thongke-title" style={{ color: "#e2e8f0", margin: 0 }}>
-            📊 BÁO CÁO TOÀN CẢNH TÒA SOẠN
+            BÁO CÁO TOÀN CẢNH TÒA SOẠN
           </h2>
           <p style={{ color: "#94a3b8", margin: "5px 0 0 0" }}>Số liệu cập nhật theo thời gian thực (Real-time)</p>
         </div>
@@ -165,7 +165,7 @@ function ThongKe() {
             onMouseOver={(e) => (e.target.style.transform = "scale(1.05)")}
             onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
           >
-            📥 Xuất Báo Cáo (Excel)
+            Xuất Báo Cáo (Excel)
           </button>
 
           <div style={{ backgroundColor: "rgba(15, 23, 42, 0.6)", padding: "10px 15px", borderRadius: "8px", border: "1px solid #38bdf8", color: "#38bdf8", fontWeight: "bold" }}>
@@ -253,7 +253,7 @@ function ThongKe() {
       <div className="section-charts" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
         <div className="chart-card" style={{ gridColumn: "1 / -1", backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
           <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            💰 Số tiền Nhuận bút chi cho mỗi Kỳ Báo
+            Số tiền Nhuận bút chi cho mỗi Kỳ Báo
           </h3>
           <div style={{ height: "300px" }}>
             <Bar
@@ -270,7 +270,7 @@ function ThongKe() {
 
         <div className="chart-card" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
           <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            📁 Cơ cấu Trạng Thái Xử Lý
+            Cơ cấu Trạng Thái Xử Lý
           </h3>
           <div style={{ height: "250px", display: "flex", justifyContent: "center" }}>
             <Pie data={pieData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { color: "#94a3b8", font: { size: 13 } } } } }} />
@@ -279,7 +279,7 @@ function ThongKe() {
 
         <div className="chart-card" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
           <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            📍 Hoạt Động Theo Khu Vực
+            Hoạt Động Theo Khu Vực
           </h3>
           <div style={{ height: "250px" }}>
             <Bar
@@ -297,7 +297,7 @@ function ThongKe() {
       </div>
       {/* Bảng phân tích hồ sơ chi tiết */}
       <div className="progress-section" style={{ marginBottom: "0" }}>
-        <h3 style={{ color: "#e2e8f0", marginTop: "0", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>📁 Phân Tích Hồ Sơ Nhanh</h3>
+        <h3 style={{ color: "#e2e8f0", marginTop: "0", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>Phân Tích Hồ Sơ Nhanh</h3>
         <table className="mini-table">
           <thead>
             <tr>

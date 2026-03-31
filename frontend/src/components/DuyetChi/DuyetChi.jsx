@@ -76,7 +76,7 @@ function DuyetChi() {
   const [locKhuVuc, setLocKhuVuc] = useState("Tất cả");
   const [locSoBao, setLocSoBao] = useState("Tất cả");
 
-  // 👉 QUẢN LÝ DÒNG MỞ RỘNG (ACCORDION)
+  // QUẢN LÝ DÒNG MỞ RỘNG (ACCORDION)
   const [expandedRows, setExpandedRows] = useState([]);
 
   // Lấy tên Lãnh đạo đăng nhập để đóng mộc
@@ -142,7 +142,7 @@ function DuyetChi() {
     if (window.confirm(`Sếp có chắc chắn DUYỆT CHI ${nhom.tongThucLanh.toLocaleString("vi-VN")}đ cho tác giả ${nhom.tacGia.hoTen}?`)) {
       try {
         await Promise.all(nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã duyệt", nguoiThaoTac: tenNguoiDung })));
-        toast.success(`✅ Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
+        toast.success(`Đã PHÊ DUYỆT phiếu chi cho ${nhom.tacGia.hoTen}!`);
         layDuLieu();
       } catch (error) {
         toast.error("Lỗi khi duyệt phiếu!");
@@ -157,7 +157,7 @@ function DuyetChi() {
           // Trả về Chờ duyệt và cũng lưu lại tên người từ chối
           nhom.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Chờ duyệt", nguoiThaoTac: tenNguoiDung })),
         );
-        toast.warning(`❌ Đã TRẢ LẠI phiếu của ${nhom.tacGia.hoTen} về phòng Kế toán!`);
+        toast.warning(`Đã TRẢ LẠI phiếu của ${nhom.tacGia.hoTen} về phòng Kế toán!`);
         layDuLieu();
       } catch (error) {
         toast.error("Lỗi khi từ chối phiếu!");
@@ -169,7 +169,7 @@ function DuyetChi() {
     <div className="duyetchi-container">
       {/* THANH CÔNG CỤ LỌC */}
       <div className="filter-bar">
-        <h4 className="filter-title">🔍 Bộ Lọc Nhanh:</h4>
+        <h4 className="filter-title">Bộ Lọc Nhanh:</h4>
         <select value={locSoBao} onChange={(e) => setLocSoBao(e.target.value)} className="filter-select">
           {dsSoBao.map((sb) => (
             <option key={sb} value={sb}>
@@ -216,7 +216,7 @@ function DuyetChi() {
                     <td className="text-italic">{nhom.tacGia.khuVuc || "Chưa rõ"}</td>
                     <td>
                       <button onClick={() => toggleRow(nhom.tacGia._id)} className="btn-toggle">
-                        {expandedRows.includes(nhom.tacGia._id) ? "🔽 Đóng" : "▶️ Xem chi tiết"} ({nhom.danhSachBai.length} bài)
+                        {expandedRows.includes(nhom.tacGia._id) ? "Đóng" : " Xem chi tiết"} ({nhom.danhSachBai.length} bài)
                       </button>
                     </td>
                     {/* Bổ sung cột Thuế để Sếp dễ đối chiếu */}
@@ -225,10 +225,10 @@ function DuyetChi() {
                     <td>
                       <div className="action-buttons">
                         <button onClick={() => handleDuyetPhieu(nhom)} className="btn-approve">
-                          ✅ DUYỆT CHI
+                          DUYỆT CHI
                         </button>
                         <button onClick={() => handleTuChoi(nhom)} className="btn-reject">
-                          ❌ TỪ CHỐI
+                          TỪ CHỐI
                         </button>
                       </div>
                     </td>

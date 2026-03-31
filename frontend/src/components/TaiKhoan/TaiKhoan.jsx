@@ -32,13 +32,13 @@ function QuanLyTaiKhoan() {
   };
 
   const handleXoa = async (id) => {
-    if (window.confirm("Cảnh báo: Đồng chí có chắc muốn xóa vĩnh viễn tài khoản này?")) {
+    if (window.confirm("Cảnh báo: Bạn có chắc muốn xóa vĩnh viễn tài khoản này?")) {
       try {
         await axios.delete(`http://localhost:5000/api/users/${id}`);
-        toast.success("Đã xóa tài khoản khỏi hệ thống! 🗑️");
+        toast.success("Đã xóa tài khoản khỏi hệ thống!");
         layDuLieu();
       } catch (error) {
-        toast.error("Lỗi khi xóa tài khoản! ❌");
+        toast.error("Lỗi khi xóa tài khoản!");
       }
     }
   };
@@ -63,10 +63,10 @@ function QuanLyTaiKhoan() {
     try {
       if (isEditing) {
         await axios.put(`http://localhost:5000/api/users/${isEditing}`, formData);
-        toast.success("Cập nhật quyền thành công! ✨");
+        toast.success("Cập nhật quyền thành công!");
       } else {
         await axios.post("http://localhost:5000/api/users/them", formData);
-        toast.success("Tạo tài khoản mới thành công! 👤");
+        toast.success("Tạo tài khoản mới thành công!");
       }
       handleHuySua();
       layDuLieu();
@@ -77,58 +77,50 @@ function QuanLyTaiKhoan() {
 
   // Hàm render giao diện Huy hiệu phân quyền
   const renderRoleBadge = (vaiTro) => {
-    switch(vaiTro) {
-      case 'Admin': return <span className="tk-badge tk-badge-admin">Quản Trị Viên</span>;
-      case 'Lãnh Đạo': return <span className="tk-badge tk-badge-lanhdao">Lãnh Đạo Duyệt</span>;
-      case 'Kế Toán': return <span className="tk-badge tk-badge-ketoan">Kế Toán Viên</span>;
-      default: return <span className="tk-badge tk-badge-nhaplieu">Thư Ký / Nhập Liệu</span>;
+    switch (vaiTro) {
+      case "Admin":
+        return <span className="tk-badge tk-badge-admin">Quản Trị Viên</span>;
+      case "Lãnh Đạo":
+        return <span className="tk-badge tk-badge-lanhdao">Lãnh Đạo Duyệt</span>;
+      case "Kế Toán":
+        return <span className="tk-badge tk-badge-ketoan">Kế Toán Viên</span>;
+      default:
+        return <span className="tk-badge tk-badge-nhaplieu">Thư Ký / Nhập Liệu</span>;
     }
   };
 
   return (
     <div className="quanly-taikhoan-container">
-      
       {/* --- FORM NHẬP LIỆU TÀI KHOẢN --- */}
       <div className="tk-form-box">
-        <h3 className="tk-title">
-          {isEditing ? "🛠️ Cập Nhật Quyền Tài Khoản" : "👤 Cấp Tài Khoản Hệ Thống Mới"}
-        </h3>
-        
+        <h3 className="tk-title">{isEditing ? "Cập Nhật Quyền Tài Khoản" : "Cấp Tài Khoản Hệ Thống Mới"}</h3>
+
         <form onSubmit={handleSubmit}>
           <div className="tk-form-row">
-            <input 
-              type="text" 
-              name="username" 
-              value={formData.username} 
-              onChange={handleChange} 
-              placeholder="Tên đăng nhập (VD: admin_01)" 
-              required 
-              disabled={isEditing} 
-              className="tk-input"
-            />
-            <input 
-              type="password" 
-              name="password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              placeholder={isEditing ? "Nhập mật khẩu mới (để trống nếu giữ nguyên)" : "Nhập mật khẩu an toàn"} 
-              required={!isEditing} 
+            <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Tên đăng nhập (VD: admin_01)" required disabled={isEditing} className="tk-input" />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder={isEditing ? "Nhập mật khẩu mới (để trống nếu giữ nguyên)" : "Nhập mật khẩu an toàn"}
+              required={!isEditing}
               className="tk-input"
             />
           </div>
 
           <div className="tk-form-row">
-            <input 
-              type="text" 
-              name="hoTen" 
-              value={formData.hoTen} 
-              onChange={handleChange} 
-              placeholder="Họ và Tên chủ tài khoản" 
-              required 
+            <input
+              type="text"
+              name="hoTen"
+              value={formData.hoTen}
+              onChange={handleChange}
+              placeholder="Họ và Tên chủ tài khoản"
+              required
               className="tk-input"
               style={{ flex: 2 }} /* Ô tên cho dài ra một xíu */
             />
-            
+
             <select name="vaiTro" value={formData.vaiTro} onChange={handleChange} required className="tk-select">
               <option value="Nhập Liệu">Thư Ký / Nhập Liệu</option>
               <option value="Kế Toán">Kế Toán Phân Bổ</option>
@@ -152,7 +144,7 @@ function QuanLyTaiKhoan() {
 
       {/* --- BẢNG DANH SÁCH TÀI KHOẢN --- */}
       <h3 style={{ marginBottom: "15px" }}>Danh Sách Người Dùng Tòa Soạn</h3>
-      
+
       <div className="tk-table-wrapper">
         <table className="tk-table">
           <thead>
@@ -170,12 +162,16 @@ function QuanLyTaiKhoan() {
                 <td className="tk-username">@{user.username}</td>
                 <td>{renderRoleBadge(user.vaiTro)}</td>
                 <td>
-                  <button onClick={() => handleChonSua(user)} className="tk-action-btn" title="Chỉnh sửa quyền">✏️</button>
-                  <button onClick={() => handleXoa(user._id)} className="tk-action-btn" title="Xóa tài khoản">🗑️</button>
+                  <button onClick={() => handleChonSua(user)} className="tk-action-btn" title="Chỉnh sửa quyền">
+                    ✏️
+                  </button>
+                  <button onClick={() => handleXoa(user._id)} className="tk-action-btn" title="Xóa tài khoản">
+                    🗑️
+                  </button>
                 </td>
               </tr>
             ))}
-            
+
             {/* Hiển thị khi chưa có data */}
             {danhSachUser.length === 0 && (
               <tr>
@@ -187,7 +183,6 @@ function QuanLyTaiKhoan() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }

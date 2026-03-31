@@ -32,13 +32,13 @@ function SoBao() {
   };
 
   const handleXoa = async (id) => {
-    if (window.confirm("Đồng chí có chắc chắn muốn xóa Số báo này? Các bài viết thuộc số báo này có thể bị ảnh hưởng!")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa Số báo này? Các bài viết thuộc số báo này có thể bị ảnh hưởng!")) {
       try {
         await axios.delete(`http://localhost:5000/api/sobao/${id}`);
-        toast.success("Đã xóa Số báo thành công! 🗑️");
+        toast.success("Đã xóa Số báo thành công!");
         layDuLieu();
       } catch (error) {
-        toast.error("Lỗi khi xóa! ❌");
+        toast.error("Lỗi khi xóa!");
       }
     }
   };
@@ -63,10 +63,10 @@ function SoBao() {
     try {
       if (isEditing) {
         await axios.put(`http://localhost:5000/api/sobao/${isEditing}`, formData);
-        toast.success("Cập nhật Số báo thành công! ✨");
+        toast.success("Cập nhật Số báo thành công!");
       } else {
         await axios.post("http://localhost:5000/api/sobao/them", formData);
-        toast.success("Đã phát hành Số báo mới! 📰");
+        toast.success("Đã phát hành Số báo mới!");
       }
       handleHuySua();
       layDuLieu();
@@ -78,7 +78,7 @@ function SoBao() {
   return (
     <div className="sobao-container">
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#2196F3" : "#4facfe" }}>{isEditing ? "🛠️ Sửa Thông Tin Số Báo" : "📰 Phát Hành Số Báo Mới"}</h3>
+        <h3 style={{ color: isEditing ? "#2196F3" : "#4facfe" }}>{isEditing ? "Sửa Thông Tin Số Báo" : "Phát Hành Số Báo Mới"}</h3>
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="maSoBao" value={formData.maSoBao} onChange={handleChange} placeholder="Mã Số Báo (VD: B01)" required />
           <input type="text" name="tenSoBao" value={formData.tenSoBao} onChange={handleChange} placeholder="Tên Số Báo (VD: Tuổi Trẻ Cuối Tuần)" required style={{ flex: 2 }} />

@@ -101,13 +101,13 @@ function TacGia() {
   };
 
   const handleXoa = async (id) => {
-    if (window.confirm("Đồng chí có chắc chắn muốn xóa tác giả này không?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa tác giả này không?")) {
       try {
         await axios.delete(`http://localhost:5000/api/tacgia/${id}`);
-        toast.success("Đã xóa tác giả thành công! 🗑️");
+        toast.success("Đã xóa tác giả thành công!");
         layDuLieu();
       } catch (error) {
-        toast.error("Lỗi khi xóa tác giả! ❌");
+        toast.error("Lỗi khi xóa tác giả!");
       }
     }
   };
@@ -134,15 +134,15 @@ function TacGia() {
     try {
       if (isEditing) {
         await axios.put(`http://localhost:5000/api/tacgia/${isEditing}`, formData);
-        toast.success("Cập nhật thông tin thành công! ✨");
+        toast.success("Cập nhật thông tin thành công!");
       } else {
         await axios.post("http://localhost:5000/api/tacgia/them", formData);
-        toast.success("Đã thêm Tác giả mới thành công! 🎉");
+        toast.success("Đã thêm Tác giả mới thành công!");
       }
       handleHuySua();
       layDuLieu();
     } catch (error) {
-      toast.error("Lỗi thao tác! Vui lòng kiểm tra lại. ⚠️");
+      toast.error("Lỗi thao tác! Vui lòng kiểm tra lại.");
     }
   };
 
@@ -150,7 +150,7 @@ function TacGia() {
     <div className="tacgia-container">
       {/* KHU VỰC FORM NHẬP LIỆU */}
       <div className="form-box" style={{ marginBottom: "30px" }}>
-        <h2 style={{ color: "#fff", borderLeft: "4px solid #00f2fe", paddingLeft: "10px", marginBottom: "20px" }}>{isEditing ? "🛠️ Cập Nhật Thông Tin Tác Giả" : "Thêm Tác Giả / Phóng Viên Mới"}</h2>
+        <h2 style={{ color: "#fff", borderLeft: "4px solid #00f2fe", paddingLeft: "10px", marginBottom: "20px" }}>{isEditing ? "Cập Nhật Thông Tin Tác Giả" : "Thêm Tác Giả / Phóng Viên Mới"}</h2>
 
         <form className="form-tacgia" onSubmit={handleSubmit}>
           <input type="text" name="maTacGia" value={formData.maTacGia} onChange={handleChange} placeholder="Mã TG" required />

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Đã bổ sung useEffect ở đây
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Menu } from "lucide-react"; // Nút mở Sidebar
+import { Menu, Sun, Moon } from "lucide-react"; // Đã gộp chung import cho gọn
 
 // --- IMPORT CÁC TRANG ---
 import AppSidebar from "./components/Sidebar/AppSidebar";
@@ -15,7 +15,10 @@ import SoBao from "./components/SoBao/SoBao";
 import PhieuChi from "./components/PhieuChi/PhieuChi";
 import TaiKhoan from "./components/TaiKhoan/TaiKhoan";
 import CauHinh from "./components/CauHinh/CauHinh";
-import "./components/Sidebar/AppSidebar.css"; // Gọi layout tổng
+
+// 👉 BẮT BUỘC IMPORT CSS TỔNG ĐỂ CÓ NỀN TÍM VÀ NÚT LIGHT/DARK MODE
+import "./App.css";
+import "./components/Sidebar/AppSidebar.css";
 
 import axios from "axios";
 axios.interceptors.request.use(
@@ -24,16 +27,31 @@ axios.interceptors.request.use(
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [vaiTro, setVaiTro] = useState(localStorage.getItem("vaiTro") || "");
   const [hoTen, setHoTen] = useState(localStorage.getItem("hoTen") || "");
-  
-  // 👉 QUẢN LÝ ĐÓNG/MỞ SIDEBAR
+
+  // QUẢN LÝ ĐÓNG/MỞ SIDEBAR
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // QUẢN LÝ LIGHT/DARK MODE
+  const [isLightMode, setIsLightMode] = useState(() => {
+    return localStorage.getItem("theme") === "light";
+  });
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.body.classList.add("light-mode");
+      localStorage.setItem("theme", "light"); // Ghi đè bộ nhớ: BẬT SÁNG
+    } else {
+      document.body.classList.remove("light-mode");
+      localStorage.setItem("theme", "dark"); // Ghi đè bộ nhớ: TẮT TỐI
+    }
+  }, [isLightMode]);
 
   const handleLoginSuccess = () => {
     setVaiTro(localStorage.getItem("vaiTro") || "");
@@ -62,53 +80,56 @@ function App() {
   return (
     <Router>
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
-      
-      {/* KHUNG BỐ CỤC TỔNG CHIA 2 CỘT */}
+
+      {/* KHUNG BỐ CỤC TỔNG */}
       <div className="app-layout">
-        
-        {/* SIDEBAR BÊN TRÁI */}
-        <AppSidebar 
-          vaiTro={vaiTro} 
-          hoTen={hoTen} 
-          handleLogout={handleLogout} 
-          isOpen={isSidebarOpen} 
-        />
+        {/* LỚP ÁNH SÁNG NỀN TÍM (Đã ráp lại) */}
+        <div className="bg-glow-effect" />
 
-        {/* CỘT NỘI DUNG BÊN PHẢI */}
-        <div className="main-wrapper">
-          
-          {/* THANH HEADER ĐIỀU KHIỂN BÊN TRÊN */}
-          <header className="top-header">
-            <button className="btn-toggle-sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-              <Menu size={24} />
-            </button>
-            <div style={{ color: "#e2e8f0", fontWeight: "bold", fontSize: "16px" }}>Hệ Thống Quản Lý Nhuận Bút</div>
-          </header>
+        {/* LỚP NỘI DUNG CHÍNH NỔI LÊN TRÊN */}
+        <div className="main-content-wrapper">
+          {/* SIDEBAR BÊN TRÁI */}
+          <AppSidebar vaiTro={vaiTro} hoTen={hoTen} handleLogout={handleLogout} isOpen={isSidebarOpen} />
 
-          {/* KHU VỰC HIỂN THỊ TRANG */}
-          <div className="content-area">
-            <Routes>
-              <Route path="/" element={<ThongKe />} />
-              {isThuKy && (
-                <>
-                  <Route path="/tac-gia" element={<TacGia />} />
-                  <Route path="/so-bao" element={<SoBao />} />
-                  <Route path="/nhuan-but" element={<NhuanBut />} />
-                </>
-              )}
-              {isKeToan && <Route path="/phieu-chi" element={<PhieuChi />} />}
-              {isLanhDao && <Route path="/duyet-chi" element={<DuyetChi />} />}
-              {isAdmin && (
-                <>
-                  <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />
-                  <Route path="/cau-hinh" element={<CauHinh />} />
-                </>
-              )}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+          {/* CỘT NỘI DUNG BÊN PHẢI */}
+          <div className="page-container">
+            {/* THANH HEADER ĐIỀU KHIỂN BÊN TRÊN */}
+            <header className="top-header">
+              <button className="btn-toggle-sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <Menu size={24} />
+              </button>
+              <div style={{ color: "#e2e8f0", fontWeight: "bold", fontSize: "16px" }}>Hệ Thống Quản Lý Nhuận Bút</div>
+
+              {/* Nút lật màu Sáng / Tối */}
+              <button className="btn-theme-toggle" onClick={() => setIsLightMode(!isLightMode)} title={isLightMode ? "Bật giao diện Tối" : "Bật giao diện Sáng"}>
+                {isLightMode ? <Moon size={20} /> : <Sun size={20} color="#facc15" />}
+              </button>
+            </header>
+
+            {/* KHU VỰC HIỂN THỊ TRANG */}
+            <div className="content-area">
+              <Routes>
+                <Route path="/" element={<ThongKe />} />
+                {isThuKy && (
+                  <>
+                    <Route path="/tac-gia" element={<TacGia />} />
+                    <Route path="/so-bao" element={<SoBao />} />
+                    <Route path="/nhuan-but" element={<NhuanBut />} />
+                  </>
+                )}
+                {isKeToan && <Route path="/phieu-chi" element={<PhieuChi />} />}
+                {isLanhDao && <Route path="/duyet-chi" element={<DuyetChi />} />}
+                {isAdmin && (
+                  <>
+                    <Route path="/quan-ly-tai-khoan" element={<TaiKhoan />} />
+                    <Route path="/cau-hinh" element={<CauHinh />} />
+                  </>
+                )}
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </div>
           </div>
         </div>
-
       </div>
     </Router>
   );

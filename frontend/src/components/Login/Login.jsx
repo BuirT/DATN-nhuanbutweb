@@ -59,7 +59,7 @@ function Login({ onLogin }) {
       }
     } catch (error) {
       // Đã nâng cấp: In lỗi chi tiết ra màn hình đen (Console F12) để dễ bắt bệnh
-      console.error("🚨 Báo cáo lỗi từ Backend:", error.response?.data || error.message);
+      console.error("Báo cáo lỗi từ Backend:", error.response?.data || error.message);
 
       toast.error(error.response?.data?.message || "Lỗi Server: Không thể kết nối với dữ liệu!", {
         position: "top-right",
@@ -74,7 +74,7 @@ function Login({ onLogin }) {
       <ToastContainer />
 
       <div className="login-box">
-        <h2>{isRegister ? "📝 TẠO TÀI KHOẢN" : "🔐 ĐĂNG NHẬP"}</h2>
+        <h2>{isRegister ? "TẠO TÀI KHOẢN" : "ĐĂNG NHẬP"}</h2>
 
         <form onSubmit={handleSubmit}>
           {isRegister && (
