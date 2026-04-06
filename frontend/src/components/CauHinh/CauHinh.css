@@ -1,115 +1,124 @@
-/* --- KHUNG BAO NGOÀI --- */
 .cauhinh-container {
-  max-width: 800px;
-  animation: fadeIn 0.5s ease-out;
+  max-width: 720px;
+  margin: 0 auto;
+  animation: cauhinhFade 0.5s ease-out;
 }
 
-/* --- PHẦN TIÊU ĐỀ HƯỚNG DẪN --- */
+@keyframes cauhinhFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .cauhinh-header {
-  margin-bottom: 20px;
-  border: 1px solid #38bdf8;
-  background-color: rgba(56, 189, 248, 0.05);
-  padding: 15px 20px;
-  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border-strong);
+  background: var(--accent-muted);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
 }
 
 .cauhinh-title {
-  color: #38bdf8;
+  color: var(--accent);
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 800;
 }
 
 .cauhinh-desc {
-  color: #cbd5e1;
-  margin-top: 10px;
-  font-size: 14px;
-  line-height: 1.5;
+  color: var(--text-muted);
+  margin-top: 0.65rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 
-/* --- KHUNG FORM CẤU HÌNH --- */
 .cauhinh-card {
-  background-color: #1e293b;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  max-width: 600px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  padding: 1.75rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .cauhinh-card-title {
-  color: #facc15;
-  margin-top: 0;
-  margin-bottom: 25px;
-  font-size: 18px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-  padding-bottom: 15px;
+  color: var(--warning);
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  font-weight: 800;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.85rem;
 }
 
-/* --- CÁC Ô NHẬP LIỆU --- */
 .form-group {
-  margin-bottom: 25px;
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
   display: block;
-  color: #94a3b8;
-  margin-bottom: 8px;
-  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 15px;
-  border-radius: 8px;
-  background-color: #0f172a;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 16px;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  font-family: inherit;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #38bdf8;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-  background-color: #1e293b;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+  background: var(--surface-2);
 }
 
 .form-hint {
-  color: #64748b;
+  color: var(--text-subtle);
   display: block;
-  margin-top: 8px;
-  font-size: 13px;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
   font-style: italic;
 }
 
-/* --- NÚT LƯU CẤU HÌNH --- */
 .btn-submit-cauhinh {
   width: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-  color: white;
+  background: linear-gradient(135deg, #059669, var(--success));
+  color: #fff;
   border: none;
-  padding: 15px;
-  border-radius: 8px;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
-  transition: all 0.3s ease;
-  margin-top: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+  font-family: inherit;
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.28);
+  transition:
+    transform 0.2s,
+    filter 0.2s;
+  margin-top: 0.5rem;
 }
 
 .btn-submit-cauhinh:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-}
-
-/* Hiệu ứng mượt mà khi mở trang */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  filter: brightness(1.05);
 }

@@ -4,9 +4,13 @@ const cors = require("cors");
 require("dotenv").config();
 
 // ==========================================================
-// 1. CẤU HÌNH ĐƯỜNG LINK KẾT NỐI (HÀN CHẾT ĐỂ TRÁNH LỖI)
+// 1. CẤU HÌNH KẾT NỐI (dùng file .env — xem backend/.env.example)
 // ==========================================================
-const MONGO_URI="mongodb://BuirT:2412BuirT@ac-230zzdo-shard-00-00.zznc5o0.mongodb.net:27017,ac-230zzdo-shard-00-01.zznc5o0.mongodb.net:27017,ac-230zzdo-shard-00-02.zznc5o0.mongodb.net:27017/?ssl=true&replicaSet=atlas-jmm3op-shard-0&authSource=admin&appName=Cluster0"
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error("❌ Thiếu MONGO_URI trong .env. Sao chép backend/.env.example thành .env và điền chuỗi kết nối.");
+  process.exit(1);
+}
 
 const app = express();
 app.use(cors());
@@ -52,7 +56,7 @@ app.get("/", (req, res) => {
 // ==========================================================
 // 4. KHỞI CHẠY SERVER
 // ==========================================================
-const PORT = process.env.PORT || 3000; // Ưu tiên cổng 3000 cho đồng bộ với Frontend
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy cực bốc tại: http://localhost:${PORT}`);
 });

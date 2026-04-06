@@ -17,7 +17,7 @@ router.get("/danh-sach", async (req, res) => {
 router.post("/them", async (req, res) => {
   try {
     // 1. Nhận đúng tên hàng từ Frontend gửi xuống
-    const { maSoBao, tenSoBao, ngayPhatHanh, loaiBao } = req.body;
+    const { maSoBao, tenSoBao, ngayPhatHanh, loaiBao, nganSach } = req.body;
 
     // 2. Bỏ vào khuôn mới
     const soBaoMoi = new SoBao({
@@ -25,6 +25,7 @@ router.post("/them", async (req, res) => {
       tenSoBao,
       ngayPhatHanh,
       loaiBao,
+      nganSach: Number(nganSach) || 0,
     });
 
     // 3. Lưu vào Két sắt

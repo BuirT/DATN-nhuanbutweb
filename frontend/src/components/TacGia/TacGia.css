@@ -1,107 +1,129 @@
-/* --- TRANG QUẢN LÝ TÁC GIẢ --- */
+/* Form nhập tác giả — bảng .bang-tacgia dùng chung App.css */
 
-/* 1. Khung Form Nhập Liệu */
 .form-tacgia {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 30px;
-  background-color: transparent; /* Đồng bộ nền với Nhuận Bút */
+  gap: 0.85rem;
+  margin-bottom: 0;
 }
 
 .form-tacgia input,
 .form-tacgia select {
   flex: 1;
   min-width: 150px;
-  padding: 12px 15px;
-  background-color: #0f172a; /* Nền ô input tối tiệp màu */
-  border: 1px solid rgba(255, 255, 255, 0.05); /* Viền cực mỏng */
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
+  padding: 0.75rem 1rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
 }
 
 .form-tacgia input:focus,
 .form-tacgia select:focus {
   outline: none;
-  border-color: #38bdf8; /* Viền sáng lên khi nhập liệu */
-  background-color: #1e293b;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+  background: var(--surface-2);
 }
 
 .form-tacgia button {
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
   border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.22);
+  transition:
+    transform 0.2s,
+    filter 0.2s;
 }
 
 .form-tacgia button:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
 }
 
-/* 2. Bảng Danh Sách - Xóa lưới dọc, chuẩn phong cách hiện đại */
-.bang-tacgia {
-  width: 100%;
-  border-collapse: collapse; /* Quan trọng: gộp viền để xóa khoảng trắng */
-  background-color: transparent;
+.form-tacgia .tacgia-btn-row {
+  display: flex;
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 150px;
 }
 
-.bang-tacgia thead th {
-  color: #94a3b8; /* Màu tiêu đề xám xanh giống trang khác */
-  padding: 16px 20px;
-  text-transform: uppercase;
-  font-size: 13px;
+.form-tacgia .tacgia-btn-row .btn-luu {
+  flex: 1;
+}
+
+.form-tacgia .btn-huy-tacgia {
+  flex: 1;
+  background: var(--text-subtle) !important;
+  box-shadow: none !important;
+}
+
+.tacgia-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tg-code {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tg-name {
   font-weight: 600;
-  letter-spacing: 1px;
-  border: none; /* Xóa toàn bộ viền mặc định */
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1); /* Chỉ giữ vạch kẻ dưới */
-  text-align: left;
+  color: var(--text);
 }
 
-.bang-tacgia tbody td {
-  padding: 16px 20px;
-  color: #cbd5e1;
-  border: none; /* Xóa viền dọc */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Vạch kẻ ngang mỏng chia dòng */
-  vertical-align: middle;
+.tg-badge-pv {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--accent-muted);
+  color: var(--accent);
+  border: 1px solid var(--border-strong);
 }
 
-.bang-tacgia tbody tr {
-  transition: background-color 0.2s ease;
+.tg-badge-ctv {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--success-muted);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.35);
 }
 
-.bang-tacgia tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02); /* Sáng nhẹ lên khi di chuột vào dòng */
+.tg-region {
+  font-style: italic;
+  color: var(--text-muted);
 }
 
-/* 3. Nút Hành Động trong bảng */
-.bang-tacgia td button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  margin-right: 8px;
-  font-size: 12px;
+.tacgia-page-title {
+  color: var(--text);
+  margin: 1.5rem 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding-left: 0.65rem;
+  border-left: 3px solid var(--accent);
 }
 
-.bang-tacgia td button:nth-child(1) {
-  /* Nút Sửa */
-  background-color: rgba(234, 179, 8, 0.15);
-  color: #facc15;
-}
-
-.bang-tacgia td button:nth-child(2) {
-  /* Nút Xóa */
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-}
-
-.bang-tacgia td button:hover {
-  filter: brightness(1.2);
+.tacgia-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
 }

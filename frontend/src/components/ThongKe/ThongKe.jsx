@@ -48,7 +48,8 @@ function ThongKe() {
     // 1. Dọn dẹp lại data cho đẹp trước khi đưa vào Excel
     const dataToExport = danhSachBaiViet.map((bai, index) => {
       const tienGoc = Number(bai.tienNhuanBut) || 0;
-      const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0; // Tính nháp lại thuế để hiển thị
+      const tienThue = Number(bai.thue) || 0;
+      const thucLanhXuat = Number.isFinite(Number(bai.thucLanh)) ? Number(bai.thucLanh) : Math.max(0, tienGoc - tienThue);
 
       return {
         STT: index + 1,
@@ -58,9 +59,10 @@ function ThongKe() {
         "Kỳ Báo": bai.soBao || "N/A",
         "Tiền Gốc (VNĐ)": tienGoc,
         "Thuế TNCN (VNĐ)": tienThue,
-        "Thực Lãnh (VNĐ)": Number(bai.thucLanh) || tienGoc - tienThue,
+        "Thực Lãnh (VNĐ)": thucLanhXuat,
         "Trạng Thái": bai.trangThai || "Chờ duyệt",
-        "Kiểm Toán (Người Duyệt)": bai.nguoiThaoTac || "Hệ thống",
+        "Người duyệt / chi": bai.nguoiDuyet || "—",
+        "Thời điểm duyệt / chi": bai.ngayDuyet ? new Date(bai.ngayDuyet).toLocaleString("vi-VN") : "—",
       };
     });
 

@@ -7,6 +7,7 @@ function NhuanBut() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
   const [danhSachTacGia, setDanhSachTacGia] = useState([]);
   const [danhSachSoBao, setDanhSachSoBao] = useState([]);
+  const [cauHinh, setCauHinh] = useState({ mucChiuThue: 2000000, phanTramThue: 10 });
   const [isEditing, setIsEditing] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -24,14 +25,26 @@ function NhuanBut() {
   // --- HÀM TẢI DỮ LIỆU TỪ BACKEND ---
   const layDuLieu = async () => {
     try {
-      const resBaiViet = await axios.get("http://localhost:5000/api/nhuanbut/danh-sach");
+      const [resBaiViet, resTacGia, resSoBao] = await Promise.all([
+        axios.get("http://localhost:5000/api/nhuanbut/danh-sach"),
+        axios.get("http://localhost:5000/api/tacgia/danh-sach"),
+        axios.get("http://localhost:5000/api/sobao/danh-sach"),
+      ]);
       setDanhSachBaiViet(resBaiViet.data);
-
-      const resTacGia = await axios.get("http://localhost:5000/api/tacgia/danh-sach");
       setDanhSachTacGia(resTacGia.data);
-
-      const resSoBao = await axios.get("http://localhost:5000/api/sobao/danh-sach");
       setDanhSachSoBao(resSoBao.data);
+
+      try {
+        const resCauHinh = await axios.get("http://localhost:5000/api/cauhinh");
+        if (resCauHinh.data) {
+          setCauHinh({
+            mucChiuThue: Number(resCauHinh.data.mucChiuThue) || 2000000,
+            phanTramThue: Number(resCauHinh.data.phanTramThue) || 10,
+          });
+        }
+      } catch {
+        /* giữ mặc định nếu không đọc được cấu hình */
+      }
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu:", error);
       toast.error("Không thể kết nối đến máy chủ!");
@@ -49,8 +62,7 @@ function NhuanBut() {
 
     if (name === "tienNhuanBut") {
       const tienGoc = Number(value) || 0;
-      // Thuế 10% chỉ áp dụng cho thu nhập từ 2.000.000đ trở lên
-      const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0;
+      const tienThue = tienGoc >= cauHinh.mucChiuThue ? tienGoc * (cauHinh.phanTramThue / 100) : 0;
       setThue(tienThue);
       setThucLanh(tienGoc - tienThue);
     }
@@ -81,9 +93,10 @@ function NhuanBut() {
     });
 
     const tienGoc = Number(bai.tienNhuanBut) || 0;
-    const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0;
-    setThue(tienThue);
-    setThucLanh(tienGoc - tienThue);
+    const thueLuu = Number(bai.thue) || 0;
+    const thucNum = Number(bai.thucLanh);
+    setThue(thueLuu);
+    setThucLanh(Number.isFinite(thucNum) ? thucNum : Math.max(0, tienGoc - thueLuu));
   };
 
   const handleHuySua = () => {
@@ -131,13 +144,13 @@ function NhuanBut() {
     <div className="nhuanbut-container">
       {/* KHU VỰC FORM NHẬP LIỆU */}
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#38bdf8" : "#ffffff", borderLeft: "4px solid #38bdf8", paddingLeft: "10px" }}>{isEditing ? "Sửa Thông Tin Bài Viết" : "Nhập Nhuận Bút & Tính Thuế"}</h3>
+        <h3 className={isEditing ? "nhuanbut-title-editing" : undefined}>{isEditing ? "Sửa thông tin bài viết" : "Nhập nhuận bút & tính thuế"}</h3>
 
         <form className="form-nhap" onSubmit={handleSubmit}>
-          <input type="text" name="tenBai" value={formData.tenBai} onChange={handleChange} placeholder="Tên bài viết" required style={{ width: "100%", marginBottom: "15px" }} />
+          <input className="input-full" type="text" name="tenBai" value={formData.tenBai} onChange={handleChange} placeholder="Tên bài viết" required />
 
-          <div style={{ display: "flex", gap: "15px", width: "100%", marginBottom: "15px" }}>
-            <select name="tacGia" value={formData.tacGia} onChange={handleChange} required style={{ flex: 1 }}>
+          <div className="form-row-2">
+            <select name="tacGia" value={formData.tacGia} onChange={handleChange} required>
               <option value="">-- Chọn Tác Giả --</option>
               {danhSachTacGia.map((tg) => (
                 <option key={tg._id} value={tg._id}>
@@ -146,7 +159,7 @@ function NhuanBut() {
               ))}
             </select>
 
-            <select name="soBao" value={formData.soBao} onChange={handleChange} required style={{ flex: 1 }}>
+            <select name="soBao" value={formData.soBao} onChange={handleChange} required>
               <option value="">-- Chọn Kỳ Báo / Số Báo --</option>
               {danhSachSoBao.map((bao) => (
                 <option key={bao._id} value={bao.maSoBao}>
@@ -156,87 +169,41 @@ function NhuanBut() {
             </select>
           </div>
 
-          <div style={{ display: "flex", gap: "15px", width: "100%", alignItems: "center", marginBottom: "15px" }}>
-            <input type="number" name="tienNhuanBut" value={formData.tienNhuanBut} onChange={handleChange} placeholder="Nhập Tiền Gốc (VNĐ)" required min="0" style={{ flex: 1 }} />
+          <div className="form-row-3">
+            <input type="number" name="tienNhuanBut" value={formData.tienNhuanBut} onChange={handleChange} placeholder="Nhập Tiền Gốc (VNĐ)" required min="0" />
 
-            <div
-              style={{
-                flex: 1,
-                padding: "12px",
-                backgroundColor: "rgba(244, 63, 94, 0.1)",
-                color: "#f87171",
-                borderRadius: "8px",
-                border: "1px solid rgba(244, 63, 94, 0.3)",
-                display: "flex",
-                alignItems: "center",
-                fontSize: "14px",
-              }}
-            >
-              Thuế TNCN (10%): <strong>&nbsp;{thue.toLocaleString()}đ</strong>
+            <div className="tax-preview tax-preview--danger">
+              Thuế TNCN ({cauHinh.phanTramThue}% từ {cauHinh.mucChiuThue.toLocaleString("vi-VN")}đ): <strong>{thue.toLocaleString()}đ</strong>
             </div>
 
-            <div
-              style={{
-                flex: 1,
-                padding: "12px",
-                backgroundColor: "rgba(16, 185, 129, 0.1)",
-                color: "#34d399",
-                borderRadius: "8px",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                display: "flex",
-                alignItems: "center",
-                fontSize: "15px",
-              }}
-            >
-              Thực lãnh: <strong style={{ fontSize: "18px" }}>&nbsp;{thucLanh.toLocaleString()}đ</strong>
+            <div className="tax-preview tax-preview--success">
+              Thực lãnh: <strong className="tax-preview-strong">{thucLanh.toLocaleString()}đ</strong>
             </div>
           </div>
 
-          {/* GIAO DIỆN HỆ THỐNG CẢNH BÁO */}
           {formData.soBao && nganSachToiDa > 0 && (
-            <div
-              style={{
-                marginBottom: "15px",
-                padding: "15px",
-                borderRadius: "8px",
-                backgroundColor: isVuotNganSach ? "rgba(239, 68, 68, 0.15)" : "rgba(16, 185, 129, 0.15)",
-                border: `1px solid ${isVuotNganSach ? "#ef4444" : "#10b981"}`,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ color: "#cbd5e1" }}>
+            <div className={`budget-panel ${isVuotNganSach ? "budget-panel--warn" : "budget-panel--ok"}`}>
+              <div className="budget-row">
+                <span>
                   Ngân sách cấp cho <b>{formData.soBao}</b>:
                 </span>
-                <span style={{ color: "#38bdf8", fontWeight: "bold" }}>{nganSachToiDa.toLocaleString()} đ</span>
+                <span className="budget-amount">{nganSachToiDa.toLocaleString()} đ</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ color: "#cbd5e1" }}>Tổng đã chi + Bài hiện tại:</span>
-                <span style={{ color: isVuotNganSach ? "#ef4444" : "#10b981", fontWeight: "bold" }}>{(tienDaChiThucTe + tienDangNhap).toLocaleString()} đ</span>
+              <div className="budget-row">
+                <span>Tổng đã chi + Bài hiện tại:</span>
+                <span className={isVuotNganSach ? "text-danger-strong" : "text-success-strong"}>{(tienDaChiThucTe + tienDangNhap).toLocaleString()} đ</span>
               </div>
-              {isVuotNganSach && (
-                <div style={{ marginTop: "10px", color: "#f87171", fontWeight: "bold", display: "flex", alignItems: "center", gap: "8px" }}>
-                  🚨 CẢNH BÁO: Đã vượt tổng ngân sách. Hệ thống tạm khóa nút Lưu!
-                </div>
-              )}
+              {isVuotNganSach && <div className="budget-alert">Đã vượt ngân sách kỳ — tạm khóa lưu.</div>}
             </div>
           )}
 
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button
-              type="submit"
-              className="btn-luu-bai"
-              disabled={isVuotNganSach}
-              style={{
-                opacity: isVuotNganSach ? 0.5 : 1,
-                cursor: isVuotNganSach ? "not-allowed" : "pointer",
-                backgroundColor: isVuotNganSach ? "#64748b" : "",
-              }}
-            >
-              {isEditing ? "Cập Nhật Dữ Liệu" : "Lưu Bài & Tính Toán"}
+          <div className="form-actions">
+            <button type="submit" className={`btn-luu-bai ${isVuotNganSach ? "btn-luu-bai--blocked" : ""}`} disabled={isVuotNganSach}>
+              {isEditing ? "Cập nhật dữ liệu" : "Lưu bài & tính toán"}
             </button>
             {isEditing && (
-              <button type="button" onClick={handleHuySua} className="btn-luu-bai" style={{ backgroundColor: "#64748b" }}>
-                Hủy Thao Tác
+              <button type="button" onClick={handleHuySua} className="btn-luu-bai btn-luu-bai--muted">
+                Hủy thao tác
               </button>
             )}
           </div>
@@ -244,51 +211,51 @@ function NhuanBut() {
       </div>
 
       {/* KHU VỰC BẢNG HIỂN THỊ CÓ KÈM NÚT IN ẤN */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "30px", marginBottom: "15px" }}>
-        <h3 style={{ color: "#fcfcfc", margin: 0 }}>Bảng Kê Chi Tiết Nhuận Bút</h3>
+      <div className="nhuanbut-toolbar">
+        <h3 className="section-heading">Bảng kê chi tiết nhuận bút</h3>
         <button type="button" className="btn-in-an" onClick={() => window.print()}>
-          In Bảng Kê Trình Ký
+          In bảng kê trình ký
         </button>
       </div>
 
-      <div style={{ overflowX: "auto", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+      <div className="nhuanbut-table-wrap">
         <table className="bang-danh-sach">
           <thead>
             <tr>
-              <th>Tên Bài</th>
-              <th>Tác Giả</th>
-              <th>Số Báo</th>
-              <th>Tiền Gốc</th>
-              <th style={{ color: "#f87171" }}>Thuế (10%)</th>
-              <th style={{ color: "#34d399" }}>Thực Lãnh</th>
-              <th>Trạng Thái</th>
-              <th>Hành Động</th>
+              <th>Tên bài</th>
+              <th>Tác giả</th>
+              <th>Số báo</th>
+              <th>Tiền gốc</th>
+              <th className="th-money-warn">Thuế ({cauHinh.phanTramThue}%)</th>
+              <th className="th-money-ok">Thực lãnh</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
             {danhSachBaiViet.map((bai) => {
               const tien = Number(bai.tienNhuanBut) || 0;
-              const tienThue = tien >= 2000000 ? tien * 0.1 : 0;
-              const tienThuc = tien - tienThue;
+              const tienThue = Number(bai.thue) || 0;
+              const tienThuc = Number.isFinite(Number(bai.thucLanh)) ? Number(bai.thucLanh) : Math.max(0, tien - tienThue);
 
               return (
                 <tr key={bai._id}>
-                  <td style={{ color: "#f8fafc", fontWeight: "500" }}>{bai.tenBai}</td>
+                  <td className="td-title">{bai.tenBai}</td>
                   <td>{bai.tacGia?.hoTen}</td>
                   <td>
-                    <span style={{ fontWeight: "bold", color: "#4facfe" }}>{bai.soBao}</span>
+                    <span className="issue-pill">{bai.soBao}</span>
                   </td>
-                  <td style={{ fontWeight: "bold" }}>{tien.toLocaleString()}đ</td>
-                  <td style={{ color: "#f87171" }}>{tienThue > 0 ? `-${tienThue.toLocaleString()}đ` : "0đ"}</td>
-                  <td style={{ color: "#34d399", fontWeight: "bold", fontSize: "15px" }}>{tienThuc.toLocaleString()}đ</td>
+                  <td className="td-amount">{tien.toLocaleString()}đ</td>
+                  <td className="td-money-warn">{tienThue > 0 ? `-${tienThue.toLocaleString()}đ` : "0đ"}</td>
+                  <td className="td-money-ok">{tienThuc.toLocaleString()}đ</td>
                   <td>
                     <span className={bai.trangThai === "Đã duyệt" || bai.trangThai === "Đã thanh toán" ? "badge-xong" : "badge-cho"}>{bai.trangThai || "Chờ duyệt"}</span>
                   </td>
                   <td>
-                    <button onClick={() => handleChonSua(bai)} title="Sửa bài">
+                    <button type="button" onClick={() => handleChonSua(bai)} title="Sửa bài">
                       ✏️
                     </button>
-                    <button onClick={() => handleXoa(bai._id)} title="Xóa bài">
+                    <button type="button" onClick={() => handleXoa(bai._id)} title="Xóa bài">
                       🗑️
                     </button>
                   </td>
@@ -297,7 +264,7 @@ function NhuanBut() {
             })}
             {danhSachBaiViet.length === 0 && (
               <tr>
-                <td colSpan="8" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                <td colSpan="8" className="table-empty">
                   Chưa có dữ liệu bài viết
                 </td>
               </tr>

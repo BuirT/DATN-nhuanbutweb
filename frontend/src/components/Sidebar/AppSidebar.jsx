@@ -20,7 +20,8 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
       <div className="sidebar-header">
         <div className="logo-box">TS</div>
         <div className="logo-text">
-          <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "16px", textTransform: "uppercase", letterSpacing: "1px" }}>Tòa Soạn Báo</span>
+          <span className="logo-tagline">Tòa soạn</span>
+          <span className="logo-title">Quản lý nhuận bút</span>
         </div>
       </div>
 
@@ -66,8 +67,8 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
 
         {isAdmin && (
           <>
-            <div className="menu-label" style={{ marginTop: "15px" }}>
-              Hệ Thống
+            <div className="menu-label menu-label-spaced">
+              Hệ thống
             </div>
             <Link to="/quan-ly-tai-khoan" className={`menu-item ${location.pathname === "/quan-ly-tai-khoan" ? "active" : ""}`}>
               <UserCog size={20} />
@@ -85,14 +86,14 @@ export default function AppSidebar({ vaiTro, hoTen, handleLogout, isOpen }) {
       <div className="sidebar-footer">
         <div className="user-card" style={{ display: isOpen ? "flex" : "none" }}>
           <div className="user-avatar">{chuCaiDau}</div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ color: "#e2e8f0", fontWeight: "bold", fontSize: "13px" }}>{tenHienThi}</span>
-            <span style={{ color: "#38bdf8", fontSize: "11px", fontWeight: "bold" }}>{vaiTro}</span>
+          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            <span className="user-name">{tenHienThi}</span>
+            <span className="user-role">{vaiTro}</span>
           </div>
         </div>
-        <button className="btn-logout" onClick={handleLogout} style={{ justifyContent: isOpen ? "flex-start" : "center" }}>
-          <LogOut size={20} />
-          {isOpen && <span>Đăng Xuất</span>}
+        <button type="button" className="btn-logout" onClick={handleLogout}>
+          <LogOut size={20} strokeWidth={2} />
+          {isOpen && <span>Đăng xuất</span>}
         </button>
       </div>
     </div>
