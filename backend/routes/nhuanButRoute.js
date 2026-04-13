@@ -32,7 +32,7 @@ router.get("/danh-sach", async (req, res) => {
 router.post("/nhap-bai", async (req, res) => {
   try {
     const { tenBai, tacGia, soBao, tienNhuanBut, ghiChu } = req.body;
-    const { thue, thucLanh } = tinhTien(tienNhuanBut);
+    const { thue, thucLanh } = await tinhTien(tienNhuanBut);
 
     const baiVietMoi = new NhuanBut({
       tenBai,

@@ -105,7 +105,7 @@ function DuyetChi() {
     return matchKhuVuc && matchSoBao;
   });
 
-  // --- GOM BÀI & FIX LỖI TÍNH THUẾ CHUẨN NGHIỆP VỤ ---
+  // --- Gom bài theo tác giả; tổng thuế / thực lãnh lấy từ dữ liệu từng bài (khớp backend) ---
   const groupedData = danhSachSauLoc.reduce((acc, bai) => {
     const idTG = bai.tacGia?._id;
     if (!idTG) return acc;
@@ -120,15 +120,12 @@ function DuyetChi() {
   }, {});
 
   const danhSachGom = Object.values(groupedData).map((nhom) => {
-    let thue = 0;
-    // Tính thuế trên Tổng đợt chi giống Kế toán
-    if (nhom.tongGoc >= 2000000) {
-      thue = nhom.tongGoc * 0.1;
-    }
+    const tongThue = nhom.danhSachBai.reduce((s, b) => s + (Number(b.thue) || 0), 0);
+    const tongThucLanh = nhom.danhSachBai.reduce((s, b) => s + (Number(b.thucLanh) || 0), 0);
     return {
       ...nhom,
-      tongThue: thue,
-      tongThucLanh: nhom.tongGoc - thue,
+      tongThue,
+      tongThucLanh,
     };
   });
 

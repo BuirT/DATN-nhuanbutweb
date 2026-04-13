@@ -102,7 +102,7 @@ function PhieuChi() {
     layDuLieu();
   }, []);
 
-  // --- LOGIC GOM NHÓM & TÍNH THUẾ CHUẨN NGHIỆP VỤ ---
+  // --- Gom nhóm theo tác giả; tổng thuế / thực lãnh = cộng dồn theo từng bài (đồng bộ với backend & Cấu hình thuế) ---
   useEffect(() => {
     let dataLoc = danhSachBaiViet.filter((bai) => (tabHienTai === "ChoTrinhDuyet" ? bai.trangThai === "Chờ duyệt" || !bai.trangThai : bai.trangThai === "Đã duyệt"));
 
@@ -125,14 +125,12 @@ function PhieuChi() {
     }, {});
 
     const finalData = Object.values(groupedData).map((nhom) => {
-      let thue = 0;
-      if (nhom.tongGoc >= 2000000) {
-        thue = nhom.tongGoc * 0.1;
-      }
+      const tongThue = nhom.danhSachBai.reduce((s, b) => s + (Number(b.thue) || 0), 0);
+      const tongThucLanh = nhom.danhSachBai.reduce((s, b) => s + (Number(b.thucLanh) || 0), 0);
       return {
         ...nhom,
-        tongThue: thue,
-        tongThucLanh: nhom.tongGoc - thue,
+        tongThue,
+        tongThucLanh,
       };
     });
 
@@ -165,8 +163,6 @@ function PhieuChi() {
   const handleXuatPhieu = async (e) => {
     e.preventDefault();
     try {
-      await Promise.all(isLapping.danhSachBai.map((bai) => axios.put(`http://localhost:5000/api/nhuanbut/${bai._id}`, { trangThai: "Đã thanh toán", nguoiThaoTac: tenNguoiDung })));
-
       const payload = {
         tacGia: isLapping.tacGia._id,
         danhSachBai: isLapping.danhSachBai.map((b) => b._id),
@@ -175,15 +171,16 @@ function PhieuChi() {
         thucLanh: isLapping.tongThucLanh,
         hinhThuc: formData.hinhThuc,
         lyDo: formData.lyDo,
+        nguoiThaoTac: tenNguoiDung,
       };
 
-      await axios.post("http://localhost:5000/api/phieuchi/tao-phieu", payload).catch(() => console.log("Lưu ý: Chưa mở API lưu Phiếu Chi ở Backend"));
+      await axios.post("http://localhost:5000/api/phieuchi/tao-phieu", payload);
 
       toast.success("Xuất quỹ và Tất toán thành công!");
       handleHuyForm();
       layDuLieu();
     } catch (error) {
-      toast.error("Lỗi hệ thống khi thanh toán!");
+      toast.error(error.response?.data?.message || "Lỗi hệ thống khi thanh toán — phiếu chưa được lưu.");
     }
   };
 

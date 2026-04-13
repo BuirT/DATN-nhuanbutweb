@@ -6,7 +6,7 @@ const NhuanBut = require("../models/NhuanBut");
 // 1. TẠO PHIẾU CHI VÀ TẤT TOÁN BÀI VIẾT
 router.post("/tao-phieu", async (req, res) => {
   try {
-    const { tacGia, danhSachBai, tongTien, tongThue, thucLanh, hinhThuc, lyDo } = req.body;
+    const { tacGia, danhSachBai, tongTien, tongThue, thucLanh, hinhThuc, lyDo, nguoiThaoTac } = req.body;
 
     // Sinh mã phiếu chi tự động dựa trên thời gian (VD: PC-1711612000)
     const soPhieu = "PC-" + Date.now();
@@ -26,7 +26,12 @@ router.post("/tao-phieu", async (req, res) => {
 
     // Bước B: Đổi trạng thái hàng loạt bài viết từ "Đã duyệt" -> "Đã thanh toán"
     // Dùng $in để tìm tất cả các bài có ID nằm trong danhSachBai
-    await NhuanBut.updateMany({ _id: { $in: danhSachBai } }, { $set: { trangThai: "Đã thanh toán" } });
+    const capNhatBai = { trangThai: "Đã thanh toán" };
+    if (nguoiThaoTac) {
+      capNhatBai.nguoiDuyet = nguoiThaoTac;
+      capNhatBai.ngayDuyet = new Date();
+    }
+    await NhuanBut.updateMany({ _id: { $in: danhSachBai } }, { $set: capNhatBai });
 
     res.status(201).json({
       message: "Đã xuất phiếu và tất toán thành công",

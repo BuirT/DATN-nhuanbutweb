@@ -1,104 +1,117 @@
-/* --- TRANG QUẢN LÝ TÀI KHOẢN ADMIN --- */
 .quanly-taikhoan-container {
-  padding: 20px;
-  color: #e2e8f0;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+  color: var(--text);
 }
 
-/* --- KHU VỰC FORM NHẬP LIỆU --- */
 .tk-form-box {
-  background: linear-gradient(145deg, #121827 0%, #0f172a 100%);
-  padding: 25px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  margin-bottom: 30px;
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  padding: 1.35rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.75rem;
 }
 
 .tk-title {
-  color: #38bdf8;
-  border-left: 4px solid #38bdf8;
-  padding-left: 10px;
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
+  color: var(--accent);
+  border-left: 3px solid var(--accent);
+  padding-left: 0.65rem;
+  margin: 0 0 1.15rem;
+  font-size: 1.1rem;
+  font-weight: 800;
 }
 
 .tk-form-row {
   display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
   width: 100%;
 }
 
-.tk-input, .tk-select {
+.tk-input,
+.tk-select {
   flex: 1;
-  padding: 12px 15px;
-  background-color: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  min-width: 180px;
+  padding: 0.75rem 1rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-.tk-input:focus, .tk-select:focus {
+.tk-input:focus,
+.tk-select:focus {
   outline: none;
-  border-color: #38bdf8;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-  background-color: #0f172a;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+  background: var(--surface-2);
 }
 
 .tk-input:disabled {
-  background-color: #334155;
+  opacity: 0.55;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-/* Nút bấm form */
 .tk-btn-group {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
 }
 
 .tk-btn-submit {
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
   border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  font-weight: 800;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.22);
+  transition:
+    transform 0.2s,
+    filter 0.2s;
 }
 
 .tk-btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  filter: brightness(1.05);
 }
 
 .tk-btn-cancel {
-  background-color: #64748b;
-  color: white;
+  background: var(--text-subtle);
+  color: #fff;
   border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: filter 0.2s;
 }
 
 .tk-btn-cancel:hover {
-  background-color: #475569;
+  filter: brightness(1.1);
 }
 
-/* --- KHU VỰC BẢNG DANH SÁCH --- */
 .tk-table-wrapper {
   overflow-x: auto;
-  background-color: #121827;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
 }
 
 .tk-table {
@@ -108,74 +121,77 @@
 }
 
 .tk-table th {
-  background-color: #1e293b;
-  color: #94a3b8;
-  padding: 16px 20px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  padding: 0.9rem 1rem;
   text-transform: uppercase;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
 }
 
 .tk-table td {
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  font-size: 0.9rem;
 }
 
 .tk-table tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background: var(--surface-hover);
 }
 
 .tk-username {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-style: italic;
 }
 
-/* --- BADGE PHÂN QUYỀN (Huy hiệu) --- */
 .tk-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: bold;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 800;
   display: inline-block;
+  border: 1px solid transparent;
 }
 
 .tk-badge-admin {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--danger-muted);
+  color: var(--danger);
+  border-color: rgba(248, 113, 113, 0.35);
 }
 
 .tk-badge-lanhdao {
-  background-color: rgba(234, 179, 8, 0.15);
-  color: #facc15;
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--warning);
+  border-color: rgba(251, 191, 36, 0.35);
 }
 
 .tk-badge-ketoan {
-  background-color: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: var(--accent-muted);
+  color: var(--accent);
+  border-color: var(--border-strong);
 }
 
 .tk-badge-nhaplieu {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--success-muted);
+  color: var(--success);
+  border-color: rgba(52, 211, 153, 0.35);
 }
 
-/* Nút thao tác trong bảng */
 .tk-action-btn {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 1.05rem;
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 0.5rem;
   transition: transform 0.2s;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
 }
 
 .tk-action-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  background: var(--surface-hover);
 }

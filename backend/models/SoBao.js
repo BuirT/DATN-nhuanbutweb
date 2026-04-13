@@ -19,6 +19,10 @@ const soBaoSchema = new mongoose.Schema(
       type: String,
       default: "Báo In",
     },
+    nganSach: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

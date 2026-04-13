@@ -44,13 +44,9 @@ function App() {
   });
 
   useEffect(() => {
-    if (isLightMode) {
-      document.body.classList.add("light-mode");
-      localStorage.setItem("theme", "light"); // Ghi đè bộ nhớ: BẬT SÁNG
-    } else {
-      document.body.classList.remove("light-mode");
-      localStorage.setItem("theme", "dark"); // Ghi đè bộ nhớ: TẮT TỐI
-    }
+    const theme = isLightMode ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   }, [isLightMode]);
 
   const handleLoginSuccess = () => {
@@ -79,7 +75,7 @@ function App() {
 
   return (
     <Router>
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      <ToastContainer position="top-right" autoClose={3000} theme={isLightMode ? "light" : "colored"} />
 
       {/* KHUNG BỐ CỤC TỔNG */}
       <div className="app-layout">
@@ -98,11 +94,19 @@ function App() {
               <button className="btn-toggle-sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                 <Menu size={24} />
               </button>
-              <div style={{ color: "#e2e8f0", fontWeight: "bold", fontSize: "16px" }}>Hệ Thống Quản Lý Nhuận Bút</div>
+              <div className="header-brand">
+                <span className="header-brand-kicker">Editorial desk</span>
+                <span className="header-brand-title">Hệ thống quản lý nhuận bút</span>
+              </div>
 
-              {/* Nút lật màu Sáng / Tối */}
-              <button className="btn-theme-toggle" onClick={() => setIsLightMode(!isLightMode)} title={isLightMode ? "Bật giao diện Tối" : "Bật giao diện Sáng"}>
-                {isLightMode ? <Moon size={20} /> : <Sun size={20} color="#facc15" />}
+              <button
+                type="button"
+                className="btn-theme-toggle"
+                onClick={() => setIsLightMode(!isLightMode)}
+                title={isLightMode ? "Chuyển giao diện tối" : "Chuyển giao diện sáng"}
+                aria-label={isLightMode ? "Chuyển giao diện tối" : "Chuyển giao diện sáng"}
+              >
+                {isLightMode ? <Moon size={20} strokeWidth={2} /> : <Sun size={20} strokeWidth={2} className="header-icon-sun" />}
               </button>
             </header>
 

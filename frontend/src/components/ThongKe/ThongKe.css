@@ -1,177 +1,210 @@
-/* --- KHUNG BAO NGOÀI --- */
 .thongke-container {
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
-  animation: fadeIn 0.6s ease-out;
+  animation: thongkeFade 0.55s ease-out;
+}
+
+@keyframes thongkeFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .thongke-header {
-  margin-bottom: 30px;
-  border-left: 5px solid #38bdf8;
-  padding-left: 15px;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--accent);
 }
 
 .thongke-title {
-  color: #f8fafc;
+  color: var(--text);
   margin: 0;
-  font-size: 24px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-/* --- LƯỚI 4 THẺ THỐNG KÊ (STAT CARDS) --- */
 .thongke-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 1.75rem;
 }
 
 .stat-card {
-  background-color: #1e293b;
-  padding: 25px 20px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.05);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.35rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  opacity: 0.95;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
 }
 
-.card-blue { border-top: 4px solid #38bdf8; }
-.card-green { border-top: 4px solid #10b981; }
-.card-red { border-top: 4px solid #ef4444; }
-.card-yellow { border-top: 4px solid #facc15; }
+.card-blue::before {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.card-green::before {
+  background: linear-gradient(90deg, var(--success), #059669);
+}
+.card-red::before {
+  background: linear-gradient(90deg, var(--danger), #dc2626);
+}
+.card-yellow::before {
+  background: linear-gradient(90deg, var(--warning), #eab308);
+}
 
 .stat-label {
-  color: #94a3b8;
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 10px;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
 }
 
 .stat-value {
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: bold;
+  color: var(--text);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   margin: 0;
+  line-height: 1.2;
 }
 
 .stat-sub {
-  color: #64748b;
-  font-size: 13px;
-  margin-top: 5px;
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
 }
 
-/* --- THANH TIẾN ĐỘ GIẢI NGÂN (PROGRESS BAR) --- */
 .progress-section {
-  background-color: #1e293b;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  margin-bottom: 40px;
-  border: 1px solid rgba(255,255,255,0.05);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  padding: 1.35rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.75rem;
 }
 
 .progress-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
-  color: #e2e8f0;
-  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 20px;
-  background-color: #0f172a;
-  border-radius: 10px;
+  height: 22px;
+  background: var(--surface-2);
+  border-radius: 999px;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #059669 0%, #10b981 100%);
-  border-radius: 10px;
-  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, #059669, var(--success));
+  border-radius: 999px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 10px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+  padding-right: 0.65rem;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
 }
 
-/* --- KHU VỰC BIỂU ĐỒ (CHARTS) --- */
 .section-charts {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  margin-bottom: 40px;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
 .chart-card {
-  background-color: #1e293b;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.05);
+  background: var(--chart-surface);
+  padding: 1.35rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .chart-title {
-  color: #e2e8f0;
-  font-size: 16px;
+  color: var(--text);
+  font-size: 0.95rem;
   font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
 }
 
 .chart-card canvas {
   width: 100% !important;
 }
 
-/* --- BẢNG CHI TIẾT NHANH --- */
 .mini-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 0.75rem;
 }
 
-.mini-table th, .mini-table td {
-  padding: 12px;
+.mini-table th,
+.mini-table td {
+  padding: 0.75rem 0.85rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .mini-table th {
-  color: #94a3b8;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .mini-table td {
-  color: #e2e8f0;
+  color: var(--text);
+  font-size: 0.9rem;
 }
 
-/* --- RESPONSIVE CHO ĐIỆN THOẠI/TABLET --- */
 @media (max-width: 992px) {
   .section-charts {
-    grid-template-columns: 1fr; /* Thu về 1 cột trên màn hình nhỏ */
+    grid-template-columns: 1fr;
   }
   .chart-card {
     grid-column: span 1 !important;
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
 }

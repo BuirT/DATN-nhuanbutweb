@@ -69,9 +69,11 @@ function Login({ onLogin }) {
     }
   };
 
+  const toastTheme = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "light" ? "light" : "colored";
+
   return (
     <div className="login-container">
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} theme={toastTheme} />
 
       <div className="login-box">
         <h2>{isRegister ? "TẠO TÀI KHOẢN" : "ĐĂNG NHẬP"}</h2>

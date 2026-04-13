@@ -1,33 +1,93 @@
-/* Dùng chung form-box và bảng với các trang khác cho đồng bộ */
 .sobao-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.sobao-container .input-full-width {
+  width: 100%;
+  flex-basis: 100%;
+}
+
+.sobao-container .form-nhap .input-stretch {
+  flex: 2;
+  min-width: 220px;
+}
+
+.sobao-row-dates {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 0.85rem;
+  flex: 2;
+  min-width: 280px;
+}
+
+.sobao-row-dates input,
+.sobao-row-dates select {
+  flex: 1;
+  min-width: 140px;
+}
+
+.sobao-actions {
+  display: flex;
+  gap: 0.65rem;
+  width: 100%;
+  margin-top: 0.25rem;
 }
 
 .btn-luu-bao {
-  background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%); /* Màu tím mượt mà cho phần Số báo */
-  color: white;
+  background: linear-gradient(135deg, #a855f7 0%, var(--accent-2) 100%);
+  color: #fff;
   border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.3);
+  transition:
+    transform 0.2s,
+    filter 0.2s;
 }
 
 .btn-luu-bao:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  filter: brightness(1.06);
+}
+
+.btn-luu-bao--muted {
+  background: var(--text-subtle) !important;
+  box-shadow: none !important;
 }
 
 .badge-loai {
-  background-color: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: bold;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(129, 140, 248, 0.18);
+  color: var(--accent-2);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
+.sobao-section-title {
+  color: var(--text);
+  margin: 1.75rem 0 1rem;
+  padding-bottom: 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+
+.sobao-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.sobao-code {
+  font-weight: 800;
+  color: var(--accent);
 }

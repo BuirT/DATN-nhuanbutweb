@@ -9,9 +9,10 @@ function SoBao() {
 
   const [formData, setFormData] = useState({
     maSoBao: "",
-    tenSoBao: "", // Sửa thành tên mới
-    ngayPhatHanh: "", // Sửa thành tên mới
+    tenSoBao: "",
+    ngayPhatHanh: "",
     loaiBao: "Báo In",
+    nganSach: "",
   });
 
   const layDuLieu = async () => {
@@ -48,24 +49,31 @@ function SoBao() {
     setFormData({
       maSoBao: bao.maSoBao,
       tenSoBao: bao.tenSoBao,
-      ngayPhatHanh: bao.ngayPhatHanh ? bao.ngayPhatHanh.substring(0, 10) : "", // Cắt lấy ngày YYYY-MM-DD
+      ngayPhatHanh: bao.ngayPhatHanh ? bao.ngayPhatHanh.substring(0, 10) : "",
       loaiBao: bao.loaiBao || "Báo In",
+      nganSach: bao.nganSach != null && bao.nganSach !== "" ? String(bao.nganSach) : "",
     });
   };
 
   const handleHuySua = () => {
     setIsEditing(null);
-    setFormData({ maSoBao: "", tenSoBao: "", ngayPhatHanh: "", loaiBao: "Báo In" });
+    setFormData({ maSoBao: "", tenSoBao: "", ngayPhatHanh: "", loaiBao: "Báo In", nganSach: "" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:5000/api/sobao/${isEditing}`, formData);
+        await axios.put(`http://localhost:5000/api/sobao/${isEditing}`, {
+          ...formData,
+          nganSach: formData.nganSach === "" ? 0 : Number(formData.nganSach),
+        });
         toast.success("Cập nhật Số báo thành công!");
       } else {
-        await axios.post("http://localhost:5000/api/sobao/them", formData);
+        await axios.post("http://localhost:5000/api/sobao/them", {
+          ...formData,
+          nganSach: formData.nganSach === "" ? 0 : Number(formData.nganSach),
+        });
         toast.success("Đã phát hành Số báo mới!");
       }
       handleHuySua();
@@ -78,26 +86,37 @@ function SoBao() {
   return (
     <div className="sobao-container">
       <div className="form-box">
-        <h3 style={{ color: isEditing ? "#2196F3" : "#4facfe" }}>{isEditing ? "Sửa Thông Tin Số Báo" : "Phát Hành Số Báo Mới"}</h3>
+        <h3>{isEditing ? "Sửa thông tin số báo" : "Phát hành số báo mới"}</h3>
         <form className="form-nhap" onSubmit={handleSubmit}>
           <input type="text" name="maSoBao" value={formData.maSoBao} onChange={handleChange} placeholder="Mã Số Báo (VD: B01)" required />
-          <input type="text" name="tenSoBao" value={formData.tenSoBao} onChange={handleChange} placeholder="Tên Số Báo (VD: Tuổi Trẻ Cuối Tuần)" required style={{ flex: 2 }} />
+          <input className="input-stretch" type="text" name="tenSoBao" value={formData.tenSoBao} onChange={handleChange} placeholder="Tên Số Báo (VD: Tuổi Trẻ Cuối Tuần)" required />
 
-          <div style={{ display: "flex", gap: "15px", flex: 2 }}>
-            <input type="date" name="ngayPhatHanh" value={formData.ngayPhatHanh} onChange={handleChange} required style={{ flex: 1 }} title="Ngày Phát Hành" />
-            <select name="loaiBao" value={formData.loaiBao} onChange={handleChange} style={{ flex: 1 }}>
+          <div className="sobao-row-dates">
+            <input type="date" name="ngayPhatHanh" value={formData.ngayPhatHanh} onChange={handleChange} required title="Ngày Phát Hành" />
+            <select name="loaiBao" value={formData.loaiBao} onChange={handleChange}>
               <option value="Báo In">Báo In</option>
               <option value="Báo Điện Tử">Báo Điện Tử</option>
               <option value="Tạp Chí">Tạp Chí</option>
             </select>
           </div>
 
-          <div style={{ display: "flex", gap: "10px", width: "100%", marginTop: "10px" }}>
+          <input
+            className="input-full-width"
+            type="number"
+            name="nganSach"
+            value={formData.nganSach}
+            onChange={handleChange}
+            placeholder="Ngân sách nhuận bút kỳ này (VNĐ, tùy chọn)"
+            min="0"
+            title="Dùng để cảnh báo vượt ngân sách ở màn Nhập nhuận bút"
+          />
+
+          <div className="sobao-actions">
             <button type="submit" className="btn-luu-bao">
-              {isEditing ? "Lưu Cập Nhật" : "Tạo Số Báo"}
+              {isEditing ? "Lưu cập nhật" : "Tạo số báo"}
             </button>
             {isEditing && (
-              <button type="button" onClick={handleHuySua} className="btn-luu-bao" style={{ backgroundColor: "#64748b" }}>
+              <button type="button" onClick={handleHuySua} className="btn-luu-bao btn-luu-bao--muted">
                 Hủy
               </button>
             )}
@@ -105,7 +124,8 @@ function SoBao() {
         </form>
       </div>
 
-      <h3 style={{ color: "#e2e8f0", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px", marginTop: "30px", marginBottom: "20px" }}>Danh sách Các Kỳ Báo Đã Phát Hành</h3>
+      <h3 className="sobao-section-title">Danh sách kỳ báo đã phát hành</h3>
+      <div className="sobao-table-wrap">
       <table className="bang-danh-sach">
         <thead>
           <tr>
@@ -113,25 +133,27 @@ function SoBao() {
             <th>Tên Số Báo</th>
             <th>Ngày Phát Hành</th>
             <th>Loại Báo</th>
+            <th>Ngân sách (VNĐ)</th>
             <th>Hành Động</th>
           </tr>
         </thead>
         <tbody>
           {danhSachSoBao.length === 0 ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
-                Chưa có dữ liệu Số báo. (Cần viết API Backend)
-              </td>
+                <td colSpan="6" className="table-empty">
+                  Chưa có dữ liệu Số báo.
+                </td>
             </tr>
           ) : (
             danhSachSoBao.map((bao) => (
               <tr key={bao._id}>
-                <td style={{ fontWeight: "bold", color: "#00f2fe" }}>{bao.maSoBao}</td>
+                <td className="sobao-code">{bao.maSoBao}</td>
                 <td>{bao.tenSoBao}</td>
                 <td>{new Date(bao.ngayPhatHanh).toLocaleDateString("vi-VN")}</td>
                 <td>
                   <span className="badge-loai">{bao.loaiBao}</span>
                 </td>
+                <td>{Number(bao.nganSach) > 0 ? Number(bao.nganSach).toLocaleString("vi-VN") : "—"}</td>
                 <td>
                   <button onClick={() => handleChonSua(bao)}>✏️</button>
                   <button onClick={() => handleXoa(bao._id)}>🗑️</button>
@@ -141,6 +163,7 @@ function SoBao() {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

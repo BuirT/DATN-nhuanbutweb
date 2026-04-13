@@ -149,8 +149,8 @@ function TacGia() {
   return (
     <div className="tacgia-container">
       {/* KHU VỰC FORM NHẬP LIỆU */}
-      <div className="form-box" style={{ marginBottom: "30px" }}>
-        <h2 style={{ color: "#fff", borderLeft: "4px solid #00f2fe", paddingLeft: "10px", marginBottom: "20px" }}>{isEditing ? "Cập Nhật Thông Tin Tác Giả" : "Thêm Tác Giả / Phóng Viên Mới"}</h2>
+      <div className="form-box">
+        <h2>{isEditing ? "Cập nhật thông tin tác giả" : "Thêm tác giả / phóng viên"}</h2>
 
         <form className="form-tacgia" onSubmit={handleSubmit}>
           <input type="text" name="maTacGia" value={formData.maTacGia} onChange={handleChange} placeholder="Mã TG" required />
@@ -174,12 +174,12 @@ function TacGia() {
 
           <input type="text" name="dienThoai" value={formData.dienThoai} onChange={handleChange} placeholder="Số điện thoại" />
 
-          <div style={{ display: "flex", gap: "10px", flex: 1, minWidth: "150px" }}>
-            <button type="submit" className="btn-luu" style={{ flex: 1 }}>
-              {isEditing ? "Lưu Thay Đổi" : "Lưu Tác Giả"}
+          <div className="tacgia-btn-row">
+            <button type="submit" className="btn-luu">
+              {isEditing ? "Lưu thay đổi" : "Lưu tác giả"}
             </button>
             {isEditing && (
-              <button type="button" onClick={handleHuySua} style={{ backgroundColor: "#64748b", flex: 1 }}>
+              <button type="button" className="btn-luu btn-huy-tacgia" onClick={handleHuySua}>
                 Hủy
               </button>
             )}
@@ -188,9 +188,9 @@ function TacGia() {
       </div>
 
       {/* KHU VỰC BẢNG DANH SÁCH */}
-      <h3 style={{ color: "#e2e8f0", marginBottom: "15px" }}>Danh sách Tác giả / Phóng viên</h3>
+      <h3 className="tacgia-page-title">Danh sách tác giả / phóng viên</h3>
 
-      <div style={{ overflowX: "auto", backgroundColor: "#121827", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+      <div className="tacgia-table-wrap">
         <table className="bang-tacgia">
           <thead>
             <tr>
@@ -206,30 +206,19 @@ function TacGia() {
           <tbody>
             {danhSachTacGia.map((tacGia) => (
               <tr key={tacGia._id}>
-                <td style={{ fontWeight: "bold", color: "#38bdf8" }}>{tacGia.maTacGia}</td>
-                <td style={{ color: "#f8fafc", fontWeight: "600" }}>{tacGia.hoTen}</td>
+                <td className="tg-code">{tacGia.maTacGia}</td>
+                <td className="tg-name">{tacGia.hoTen}</td>
                 <td>{tacGia.butDanh}</td>
                 <td>
-                  <span
-                    style={{
-                      backgroundColor: tacGia.loaiTacGia === "Phóng viên" ? "rgba(56, 189, 248, 0.15)" : "rgba(16, 185, 129, 0.15)",
-                      color: tacGia.loaiTacGia === "Phóng viên" ? "#38bdf8" : "#10b981",
-                      padding: "4px 8px",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {tacGia.loaiTacGia}
-                  </span>
+                  <span className={tacGia.loaiTacGia === "Phóng viên" ? "tg-badge-pv" : "tg-badge-ctv"}>{tacGia.loaiTacGia}</span>
                 </td>
-                <td style={{ fontStyle: "italic", color: "#94a3b8" }}>{tacGia.khuVuc || "Chưa phân loại"}</td>
+                <td className="tg-region">{tacGia.khuVuc || "Chưa phân loại"}</td>
                 <td>{tacGia.dienThoai}</td>
                 <td>
-                  <button onClick={() => handleChonSua(tacGia)} title="Sửa thông tin" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px" }}>
+                  <button type="button" onClick={() => handleChonSua(tacGia)} title="Sửa thông tin">
                     ✏️
                   </button>
-                  <button onClick={() => handleXoa(tacGia._id)} title="Xóa tác giả" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", marginLeft: "10px" }}>
+                  <button type="button" onClick={() => handleXoa(tacGia._id)} title="Xóa tác giả">
                     🗑️
                   </button>
                 </td>
@@ -237,7 +226,7 @@ function TacGia() {
             ))}
             {danhSachTacGia.length === 0 && (
               <tr>
-                <td colSpan="7" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                <td colSpan="7" className="table-empty">
                   Chưa có dữ liệu tác giả
                 </td>
               </tr>

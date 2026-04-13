@@ -44,7 +44,8 @@ Hệ thống web ứng dụng quản lý quy trình chấm và chi trả nhuận
 
 1. Mở Terminal và di chuyển vào thư mục backend: `cd backend`
 2. Cài đặt các thư viện cần thiết: `npm install`
-3. Khởi động server: `node server.js`
+3. Tạo file `.env` từ `.env.example`, điền `MONGO_URI` (chuỗi kết nối MongoDB) và tùy chọn `PORT` (mặc định 5000).
+4. Khởi động server: `node server.js`
    _(Máy chủ sẽ chạy tại địa chỉ http://localhost:5000)_
 
 ### Bước 2: Khởi động Frontend (Giao diện người dùng)
