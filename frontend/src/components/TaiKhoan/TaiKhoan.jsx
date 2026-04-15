@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import "./TaiKhoan.css"; // Đã import file CSS riêng biệt
+import "./TaiKhoan.css";
 
 function QuanLyTaiKhoan() {
   const [danhSachUser, setDanhSachUser] = useState([]);
@@ -110,16 +110,7 @@ function QuanLyTaiKhoan() {
           </div>
 
           <div className="tk-form-row">
-            <input
-              type="text"
-              name="hoTen"
-              value={formData.hoTen}
-              onChange={handleChange}
-              placeholder="Họ và Tên chủ tài khoản"
-              required
-              className="tk-input"
-              style={{ flex: 2 }} /* Ô tên cho dài ra một xíu */
-            />
+            <input type="text" name="hoTen" value={formData.hoTen} onChange={handleChange} placeholder="Họ và Tên chủ tài khoản" required className="tk-input tk-input-long" />
 
             <select name="vaiTro" value={formData.vaiTro} onChange={handleChange} required className="tk-select">
               <option value="Nhập Liệu">Thư Ký / Nhập Liệu</option>
@@ -143,7 +134,7 @@ function QuanLyTaiKhoan() {
       </div>
 
       {/* --- BẢNG DANH SÁCH TÀI KHOẢN --- */}
-      <h3 style={{ marginBottom: "15px" }}>Danh Sách Người Dùng Tòa Soạn</h3>
+      <h3 className="tk-list-title">Danh Sách Người Dùng Tòa Soạn</h3>
 
       <div className="tk-table-wrapper">
         <table className="tk-table">
@@ -158,7 +149,8 @@ function QuanLyTaiKhoan() {
           <tbody>
             {danhSachUser.map((user) => (
               <tr key={user._id}>
-                <td style={{ fontWeight: "bold", color: "#f8fafc" }}>{user.hoTen}</td>
+                {/* Đã xóa style cứng, gán class tk-name để CSS quản lý */}
+                <td className="tk-name">{user.hoTen}</td>
                 <td className="tk-username">@{user.username}</td>
                 <td>{renderRoleBadge(user.vaiTro)}</td>
                 <td>
@@ -175,7 +167,7 @@ function QuanLyTaiKhoan() {
             {/* Hiển thị khi chưa có data */}
             {danhSachUser.length === 0 && (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                <td colSpan="4" className="tk-empty-message">
                   Hệ thống chưa có tài khoản nào được cấp.
                 </td>
               </tr>

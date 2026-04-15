@@ -1,3 +1,8 @@
+/* =========================================================
+   THUẦN TÚY SỬ DỤNG BIẾN CSS GỐC CỦA HỆ THỐNG
+   (Tự động thích nghi mọi chế độ Sáng/Tối)
+   ========================================================= */
+
 .thongke-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -15,10 +20,20 @@
   }
 }
 
+.loading-text {
+  color: var(--accent, #38bdf8);
+  text-align: center;
+  margin-top: 100px;
+}
+
+/* --- HEADER --- */
 .thongke-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 1.5rem;
   padding-left: 1rem;
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--accent, #38bdf8);
 }
 
 .thongke-title {
@@ -27,8 +42,52 @@
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
 }
 
+.thongke-subtitle {
+  color: var(--text-subtle, #94a3b8);
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #059669 0%, var(--success, #10b981) 100%);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius, 8px);
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-export:hover {
+  transform: scale(1.05);
+}
+
+.time-box {
+  background: var(--bg-elevated);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--accent, #38bdf8);
+  color: var(--accent, #38bdf8);
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+/* --- LƯỚI THẺ THỐNG KÊ --- */
 .thongke-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -37,18 +96,19 @@
 }
 
 .stat-card {
-  background: var(--bg-elevated);
+  background: var(--bg-elevated); /* Mấu chốt là đây: Lấy nền theo hệ thống */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 1.35rem 1.2rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.05));
   position: relative;
   overflow: hidden;
   transition:
     transform 0.25s ease,
-    border-color 0.25s ease;
+    border-color 0.25s ease,
+    background-color 0.3s ease;
 }
 
 .stat-card::before {
@@ -58,60 +118,93 @@
   left: 0;
   right: 0;
   height: 3px;
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: var(--radius, 12px) var(--radius, 12px) 0 0;
   opacity: 0.95;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  border-color: var(--border-strong);
+  border-color: var(--border-strong, #38bdf8);
 }
 
 .card-blue::before {
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background: linear-gradient(90deg, var(--accent, #38bdf8), #60a5fa);
 }
 .card-green::before {
-  background: linear-gradient(90deg, var(--success), #059669);
+  background: linear-gradient(90deg, var(--success, #10b981), #059669);
 }
 .card-red::before {
-  background: linear-gradient(90deg, var(--danger), #dc2626);
+  background: linear-gradient(90deg, var(--danger, #ef4444), #dc2626);
 }
 .card-yellow::before {
-  background: linear-gradient(90deg, var(--warning), #eab308);
+  background: linear-gradient(90deg, var(--warning, #facc15), #eab308);
 }
 
 .stat-label {
-  color: var(--text-muted);
+  color: var(--text-muted, #94a3b8);
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
 }
 
 .stat-value {
   color: var(--text);
   font-size: 1.65rem;
-  font-weight: 800;
+  font-weight: 800 !important; /* Lệnh thép: Ép in đậm mọi lúc mọi nơi */
+  font-family: inherit !important; /* Đồng bộ tuyệt đối font chữ với hệ thống */
   letter-spacing: -0.02em;
   margin: 0;
   line-height: 1.2;
+  transition: color 0.3s ease;
 }
 
 .stat-sub {
-  color: var(--text-subtle);
+  color: var(--text-subtle, #64748b);
   font-size: 0.8rem;
   margin-top: 0.35rem;
+  transition: color 0.3s ease;
 }
 
+/* PHẦN CHIA TÁCH THANH TOÁN (CK/TM) */
+.payment-split {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.3s ease;
+}
+
+.split-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+.split-item span {
+  color: var(--text-subtle);
+  transition: color 0.3s ease;
+}
+
+/* --- THANH TIẾN ĐỘ --- */
 .progress-section {
   background: var(--bg-elevated);
   backdrop-filter: blur(12px);
   padding: 1.35rem 1.5rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.05));
   margin-bottom: 1.75rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0;
 }
 
 .progress-header {
@@ -121,21 +214,23 @@
   color: var(--text);
   font-weight: 700;
   font-size: 0.95rem;
+  transition: color 0.3s ease;
 }
 
 .progress-bar-bg {
   width: 100%;
   height: 22px;
-  background: var(--surface-2);
+  background: var(--surface-2, #e2e8f0); /* Màu nền thanh xám nhạt */
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid var(--border);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #059669, var(--success));
+  background: linear-gradient(90deg, #059669, var(--success, #10b981));
   border-radius: 999px;
   transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -147,19 +242,34 @@
   font-weight: 800;
 }
 
+/* --- KHU VỰC BIỂU ĐỒ --- */
 .section-charts {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   margin-bottom: 1.75rem;
 }
+.chart-full {
+  grid-column: 1 / -1;
+}
+.chart-wrapper-large {
+  height: 300px;
+}
+.chart-wrapper-small {
+  height: 250px;
+  display: flex;
+  justify-content: center;
+}
 
 .chart-card {
-  background: var(--chart-surface);
+  background: var(--bg-elevated);
   padding: 1.35rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.05));
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .chart-title {
@@ -168,12 +278,21 @@
   font-weight: 700;
   margin: 0 0 1rem;
   letter-spacing: -0.01em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.border-bottom {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  transition: border-color 0.3s ease;
 }
 
 .chart-card canvas {
   width: 100% !important;
 }
 
+/* --- BẢNG CHI TIẾT NHANH --- */
 .mini-table {
   width: 100%;
   border-collapse: collapse;
@@ -185,6 +304,7 @@
   padding: 0.75rem 0.85rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  transition: border-color 0.3s ease;
 }
 
 .mini-table th {
@@ -193,11 +313,52 @@
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  transition: color 0.3s ease;
 }
 
 .mini-table td {
   color: var(--text);
   font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+/* Các màu chữ đặc biệt */
+.text-subtle {
+  color: var(--text-subtle);
+}
+.bold-text {
+  font-weight: 700;
+}
+.text-green {
+  color: var(--success, #10b981) !important;
+}
+.text-red {
+  color: var(--danger, #ef4444) !important;
+}
+.text-yellow {
+  color: var(--warning, #facc15) !important;
+}
+
+/* Dấu chấm màu */
+.dot-yellow {
+  color: var(--warning, #facc15);
+  font-weight: bold;
+  margin-right: 5px;
+}
+.dot-blue {
+  color: var(--accent, #38bdf8);
+  font-weight: bold;
+  margin-right: 5px;
+}
+.dot-green {
+  color: var(--success, #10b981);
+  font-weight: bold;
+  margin-right: 5px;
+}
+.dot-purple {
+  color: #a855f7;
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 @media (max-width: 992px) {
@@ -206,5 +367,10 @@
   }
   .chart-card {
     grid-column: span 1 !important;
+  }
+  .thongke-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
 }

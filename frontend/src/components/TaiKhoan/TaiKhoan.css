@@ -1,197 +1,239 @@
+/* =========================================================
+   GIAO DIỆN QUẢN LÝ TÀI KHOẢN
+   Tự động thích ứng Sáng/Tối qua Biến Hệ Thống (CSS Variables)
+   ========================================================= */
+
 .quanly-taikhoan-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0;
-  color: var(--text);
+  animation: fadeIn 0.4s ease-out;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- KHU VỰC FORM NHẬP LIỆU --- */
 .tk-form-box {
-  background: var(--bg-elevated);
+  background: var(--bg-elevated, #1e293b);
   backdrop-filter: blur(12px);
-  padding: 1.35rem 1.5rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 1.75rem;
+  padding: 25px;
+  border-radius: var(--radius, 12px);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  margin-bottom: 30px;
+  border-left: 5px solid var(--accent, #38bdf8);
+  transition: all 0.3s ease;
 }
 
 .tk-title {
-  color: var(--accent);
-  border-left: 3px solid var(--accent);
-  padding-left: 0.65rem;
-  margin: 0 0 1.15rem;
-  font-size: 1.1rem;
+  color: var(--accent, #38bdf8);
+  font-size: 1.25rem;
   font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.tk-list-title {
+  color: var(--text, #f8fafc);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 15px;
 }
 
 .tk-form-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-bottom: 0.85rem;
-  width: 100%;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
+/* Các Ô Input và Select */
 .tk-input,
 .tk-select {
   flex: 1;
-  min-width: 180px;
-  padding: 0.75rem 1rem;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-size: 0.9rem;
-  font-family: inherit;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  background-color: var(--surface-2, rgba(15, 23, 42, 0.6));
+  color: var(--text, #f8fafc);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  padding: 12px 15px;
+  border-radius: var(--radius, 8px);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.tk-input-long {
+  flex: 2; /* Ép ô họ tên dài ra */
 }
 
 .tk-input:focus,
 .tk-select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-muted);
-  background: var(--surface-2);
+  border-color: var(--accent, #38bdf8);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 .tk-input:disabled {
-  opacity: 0.55;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
+/* Nút bấm (Submit / Cancel) */
 .tk-btn-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1rem;
+  gap: 15px;
 }
 
 .tk-btn-submit {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  background: linear-gradient(90deg, var(--accent, #38bdf8), #60a5fa);
   color: #fff;
   border: none;
-  padding: 0.75rem 1.35rem;
-  border-radius: var(--radius-sm);
+  padding: 12px 25px;
+  border-radius: var(--radius, 8px);
+  font-weight: bold;
   cursor: pointer;
-  font-weight: 800;
-  font-size: 0.9rem;
-  font-family: inherit;
-  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.22);
-  transition:
-    transform 0.2s,
-    filter 0.2s;
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+  transition: transform 0.2s;
 }
 
 .tk-btn-submit:hover {
   transform: translateY(-2px);
-  filter: brightness(1.05);
 }
 
 .tk-btn-cancel {
-  background: var(--text-subtle);
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.35rem;
-  border-radius: var(--radius-sm);
+  background-color: var(--surface-2, #334155);
+  color: var(--text, #f8fafc);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  padding: 12px 25px;
+  border-radius: var(--radius, 8px);
+  font-weight: bold;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 0.9rem;
-  font-family: inherit;
-  transition: filter 0.2s;
+  transition: all 0.2s;
 }
 
 .tk-btn-cancel:hover {
-  filter: brightness(1.1);
+  background-color: var(--danger, #ef4444);
+  color: #fff;
+  border-color: var(--danger, #ef4444);
 }
 
+/* --- BẢNG DANH SÁCH (TABLE) --- */
 .tk-table-wrapper {
-  overflow-x: auto;
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
+  background: var(--bg-elevated, #1e293b);
+  border-radius: var(--radius, 12px);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  overflow: hidden; /* Bo tròn các góc bảng */
 }
 
 .tk-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.tk-table th,
+.tk-table td {
+  padding: 15px 20px;
   text-align: left;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.05));
 }
 
 .tk-table th {
-  background: var(--surface-2);
-  color: var(--text-muted);
-  padding: 0.9rem 1rem;
+  background-color: var(--surface-2, rgba(15, 23, 42, 0.4));
+  color: var(--text-muted, #94a3b8);
+  font-weight: 700;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.05em;
 }
 
-.tk-table td {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-  font-size: 0.9rem;
+/* 👉 Cột Họ và Tên (Đã fix lỗi tàng hình) */
+.tk-name {
+  font-weight: 700;
+  color: var(--text, #f8fafc); /* Tự động nhận màu chữ đen khi sáng, trắng khi tối */
 }
 
-.tk-table tr:hover {
-  background: var(--surface-hover);
-}
-
+/* Cột Username */
 .tk-username {
-  color: var(--text-muted);
+  color: var(--text-subtle, #94a3b8);
   font-style: italic;
 }
 
-.tk-badge {
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  font-weight: 800;
-  display: inline-block;
-  border: 1px solid transparent;
-}
-
-.tk-badge-admin {
-  background: var(--danger-muted);
-  color: var(--danger);
-  border-color: rgba(248, 113, 113, 0.35);
-}
-
-.tk-badge-lanhdao {
-  background: rgba(251, 191, 36, 0.15);
-  color: var(--warning);
-  border-color: rgba(251, 191, 36, 0.35);
-}
-
-.tk-badge-ketoan {
-  background: var(--accent-muted);
-  color: var(--accent);
-  border-color: var(--border-strong);
-}
-
-.tk-badge-nhaplieu {
-  background: var(--success-muted);
-  color: var(--success);
-  border-color: rgba(52, 211, 153, 0.35);
-}
-
+/* Nút Hành động trong bảng */
 .tk-action-btn {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.05rem;
+  font-size: 16px;
   cursor: pointer;
-  margin-right: 0.5rem;
-  transition: transform 0.2s;
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
+  margin-right: 15px;
+  opacity: 0.7;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .tk-action-btn:hover {
-  transform: scale(1.15);
-  background: var(--surface-hover);
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.tk-empty-message {
+  text-align: center;
+  padding: 30px !important;
+  color: var(--text-muted, #64748b);
+  font-style: italic;
+}
+
+/* --- BADGE PHÂN QUYỀN (HUY HIỆU MÀU SẮC) --- */
+.tk-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.tk-badge-admin {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger, #ef4444);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tk-badge-lanhdao {
+  background-color: rgba(250, 204, 21, 0.1);
+  color: var(--warning, #facc15);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+.tk-badge-ketoan {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success, #10b981);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tk-badge-nhaplieu {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: var(--accent, #38bdf8);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+/* --- RESPONSIVE CHO ĐIỆN THOẠI/TABLET --- */
+@media (max-width: 768px) {
+  .tk-form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .tk-input-long {
+    flex: 1;
+  }
+
+  .tk-table-wrapper {
+    overflow-x: auto; /* Cho phép lướt ngang nếu màn hình quá nhỏ */
+  }
 }

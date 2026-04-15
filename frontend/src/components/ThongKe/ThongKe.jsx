@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import * as XLSX from "xlsx"; // IMPORT THƯ VIỆN EXCEL
+import * as XLSX from "xlsx";
 import "./ThongKe.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -12,6 +12,21 @@ function ThongKe() {
   const [danhSachBaiViet, setDanhSachBaiViet] = useState([]);
   const [dangTai, setDangTai] = useState(true);
   const [thoiGianThuc, setThoiGianThuc] = useState(new Date());
+
+  // 👉 Lắng nghe Sáng/Tối chỉ để đổi màu chữ cho cái Biểu đồ (Canvas)
+  const [isLightMode, setIsLightMode] = useState(false);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const isLight = document.body.classList.contains("light-mode") || document.body.classList.contains("light") || document.documentElement.getAttribute("data-theme") === "light";
+      setIsLightMode(isLight);
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   const layDuLieu = async () => {
     try {
@@ -38,17 +53,15 @@ function ThongKe() {
     return `${thu}, ${ngayThangNam} | ${gioPhutGiay}`;
   };
 
-  // HÀM XUẤT EXCEL
   const handleXuatExcel = () => {
     if (danhSachBaiViet.length === 0) {
       toast.warning("Chưa có dữ liệu để xuất báo cáo!");
       return;
     }
 
-    // 1. Dọn dẹp lại data cho đẹp trước khi đưa vào Excel
     const dataToExport = danhSachBaiViet.map((bai, index) => {
       const tienGoc = Number(bai.tienNhuanBut) || 0;
-      const tienThue = Number(bai.thue) || 0;
+      const tienThue = tienGoc >= 2000000 ? tienGoc * 0.1 : 0;
       const thucLanhXuat = Number.isFinite(Number(bai.thucLanh)) ? Number(bai.thucLanh) : Math.max(0, tienGoc - tienThue);
 
       return {
@@ -60,29 +73,33 @@ function ThongKe() {
         "Tiền Gốc (VNĐ)": tienGoc,
         "Thuế TNCN (VNĐ)": tienThue,
         "Thực Lãnh (VNĐ)": thucLanhXuat,
+        "Hình Thức Chi": bai.hinhThucChi || "—",
         "Trạng Thái": bai.trangThai || "Chờ duyệt",
         "Người duyệt / chi": bai.nguoiDuyet || "—",
         "Thời điểm duyệt / chi": bai.ngayDuyet ? new Date(bai.ngayDuyet).toLocaleString("vi-VN") : "—",
       };
     });
 
-    // 2. Tạo sheet và file Excel
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "BaoCaoNhuanBut");
-
-    // 3. Tự động tải về máy
     XLSX.writeFile(workbook, `Bao_Cao_Toa_Soan_${new Date().getTime()}.xlsx`);
     toast.success("Xuất file Excel thành công! Đã tải về máy.");
   };
 
-  // --- THUẬT TOÁN TÍNH TOÁN (Giữ nguyên) ---
+  // --- TÍNH TOÁN DỮ LIỆU ---
   const tongSoBai = danhSachBaiViet.length;
   const tongTienHienTai = danhSachBaiViet.reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
-  const tienDaChi = danhSachBaiViet.filter((bai) => bai.trangThai === "Đã thanh toán").reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
+
+  const dsDaThanhToan = danhSachBaiViet.filter((bai) => bai.trangThai === "Đã thanh toán");
+  const tienDaChi = dsDaThanhToan.reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
   const tienChuaChi = tongTienHienTai - tienDaChi;
   const tongThue = danhSachBaiViet.reduce((sum, bai) => sum + (Number(bai.thue) || 0), 0);
   const tyLeGiaiNgan = tongTienHienTai > 0 ? Math.round((tienDaChi / tongTienHienTai) * 100) : 0;
+
+  // CHIA TÁCH CK/TM
+  const tienMat = dsDaThanhToan.filter((bai) => bai.hinhThucChi === "Tiền mặt").reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
+  const chuyenKhoan = dsDaThanhToan.filter((bai) => bai.hinhThucChi === "Chuyển khoản").reduce((sum, bai) => sum + (Number(bai.thucLanh) || 0), 0);
 
   const demTrangThai = danhSachBaiViet.reduce((acc, bai) => {
     const status = bai.trangThai || "Chờ duyệt";
@@ -95,8 +112,6 @@ function ThongKe() {
     acc[issue] = (acc[issue] || 0) + (Number(bai.thucLanh) || 0);
     return acc;
   }, {});
-  const issueLabels = Object.keys(dataByIssue);
-  const issueValues = Object.values(dataByIssue);
 
   const dataByRegion = danhSachBaiViet.reduce((acc, bai) => {
     const region = bai.tacGia?.khuVuc || "Chưa rõ";
@@ -105,9 +120,10 @@ function ThongKe() {
     acc[region].money += Number(bai.thucLanh) || 0;
     return acc;
   }, {});
-  const regionLabels = Object.keys(dataByRegion);
-  const regionCounts = regionLabels.map((r) => dataByRegion[r].count);
-  const regionMoneys = regionLabels.map((r) => dataByRegion[r].money);
+
+  // MÀU BIỂU ĐỒ CHART.JS (Thích nghi với sáng tối để không bị chìm)
+  const chartTextColor = isLightMode ? "#475569" : "#94a3b8";
+  const chartGridColor = isLightMode ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)";
 
   const pieData = {
     labels: ["Chờ duyệt", "Trình Lãnh Đạo", "Đã duyệt", "Đã thanh toán"],
@@ -115,191 +131,137 @@ function ThongKe() {
       {
         data: [demTrangThai["Chờ duyệt"] || 0, demTrangThai["Trình Lãnh Đạo"] || 0, demTrangThai["Đã duyệt"] || 0, demTrangThai["Đã thanh toán"] || 0],
         backgroundColor: ["#facc15", "#3b82f6", "#10b981", "#a855f7"],
-        borderColor: "#1e293b",
+        borderColor: isLightMode ? "#ffffff" : "#1e293b",
         borderWidth: 2,
       },
     ],
   };
 
   const barDataIssue = {
-    labels: issueLabels,
-    datasets: [{ label: "Số tiền thực chi (VNĐ)", data: issueValues, backgroundColor: "#38bdf8", borderRadius: 5 }],
+    labels: Object.keys(dataByIssue),
+    datasets: [{ label: "Số tiền thực chi (VNĐ)", data: Object.values(dataByIssue), backgroundColor: "#38bdf8", borderRadius: 5 }],
   };
 
   const barDataRegion = {
-    labels: regionLabels,
+    labels: Object.keys(dataByRegion),
     datasets: [
-      { label: "Số lượng bài", data: regionCounts, backgroundColor: "#f8fafc", borderRadius: 5 },
-      { label: "Số tiền chi (Triệu VNĐ)", data: regionMoneys.map((m) => (m / 1000000).toFixed(1)), backgroundColor: "#10b981", borderRadius: 5 },
+      { label: "Số lượng bài", data: Object.keys(dataByRegion).map((r) => dataByRegion[r].count), backgroundColor: isLightMode ? "#cbd5e1" : "#475569", borderRadius: 5 },
+      { label: "Số tiền chi (Triệu VNĐ)", data: Object.keys(dataByRegion).map((r) => (dataByRegion[r].money / 1000000).toFixed(1)), backgroundColor: "#10b981", borderRadius: 5 },
     ],
   };
 
-  if (dangTai) return <h2 style={{ color: "#38bdf8", textAlign: "center", marginTop: "100px" }}>⏳ Hệ thống đang tổng hợp số liệu...</h2>;
+  if (dangTai) return <h2 className="loading-text">⏳ Hệ thống đang tổng hợp số liệu...</h2>;
 
   return (
-    <div className="thongke-container" style={{ animation: "fadeIn 0.5s ease-out" }}>
-      {/* KHU VỰC HEADER CÓ THÊM NÚT XUẤT EXCEL */}
-      <div className="thongke-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "20px" }}>
+    <div className="thongke-container">
+      {/* HEADER */}
+      <div className="thongke-header">
         <div>
-          <h2 className="thongke-title" style={{ color: "#e2e8f0", margin: 0 }}>
-            BÁO CÁO TOÀN CẢNH TÒA SOẠN
-          </h2>
-          <p style={{ color: "#94a3b8", margin: "5px 0 0 0" }}>Số liệu cập nhật theo thời gian thực (Real-time)</p>
+          <h2 className="thongke-title">BÁO CÁO TOÀN CẢNH TÒA SOẠN</h2>
+          <p className="thongke-subtitle">Số liệu cập nhật theo thời gian thực (Real-time)</p>
         </div>
 
-        <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-          <button
-            onClick={handleXuatExcel}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "linear-gradient(90deg, #059669 0%, #10b981 100%)",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "8px",
-              border: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 4px 10px rgba(16, 185, 129, 0.3)",
-              transition: "transform 0.2s",
-            }}
-            onMouseOver={(e) => (e.target.style.transform = "scale(1.05)")}
-            onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
-          >
+        <div className="header-actions">
+          <button className="btn-export" onClick={handleXuatExcel}>
             Xuất Báo Cáo (Excel)
           </button>
-
-          <div style={{ backgroundColor: "rgba(15, 23, 42, 0.6)", padding: "10px 15px", borderRadius: "8px", border: "1px solid #38bdf8", color: "#38bdf8", fontWeight: "bold" }}>
-            {formatThoiGian(thoiGianThuc)}
-          </div>
+          <div className="time-box">{formatThoiGian(thoiGianThuc)}</div>
         </div>
       </div>
 
-      {/* 4 Thẻ tổng quan */}
+      {/* 4 THẺ TỔNG QUAN */}
       <div className="thongke-grid">
-        <div className="stat-card card-blue" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", padding: "20px", borderRadius: "12px" }}>
-          <div className="stat-label" style={{ color: "#94a3b8" }}>
-            Tổng Quy Mô Chi Trả
-          </div>
-          <div className="stat-value" style={{ color: "#e2e8f0", fontSize: "24px", fontWeight: "bold", margin: "10px 0" }}>
-            {tongTienHienTai.toLocaleString()}đ
-          </div>
-          <div className="stat-sub" style={{ color: "#64748b", fontSize: "13px" }}>
-            Tổng: {tongSoBai} bài viết / ảnh
+        <div className="stat-card card-blue">
+          <div className="stat-label">Tổng Quy Mô Chi Trả</div>
+          <div className="stat-value">{tongTienHienTai.toLocaleString()}đ</div>
+          <div className="stat-sub">Tổng: {tongSoBai} bài viết / ảnh</div>
+        </div>
+
+        <div className="stat-card card-green">
+          <div className="stat-label">Đã Giải Ngân (Thanh toán)</div>
+          <div className="stat-value text-green">{tienDaChi.toLocaleString()}đ</div>
+          <div className="payment-split">
+            <div className="split-item">
+              <span>Chuyển khoản:</span>
+              <strong className="text-green">{chuyenKhoan.toLocaleString()}đ</strong>
+            </div>
+            <div className="split-item">
+              <span>Tiền mặt:</span>
+              <strong className="text-green">{tienMat.toLocaleString()}đ</strong>
+            </div>
           </div>
         </div>
-        <div className="stat-card card-green" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "20px", borderRadius: "12px" }}>
-          <div className="stat-label" style={{ color: "#94a3b8" }}>
-            Đã Giải Ngân (Thanh toán)
-          </div>
-          <div className="stat-value" style={{ color: "#34d399", fontSize: "24px", fontWeight: "bold", margin: "10px 0" }}>
-            {tienDaChi.toLocaleString()}đ
-          </div>
-          <div className="stat-sub" style={{ color: "#64748b", fontSize: "13px" }}>
-            Hoàn tất thủ tục
-          </div>
+
+        <div className="stat-card card-red">
+          <div className="stat-label">Công Nợ Tồn Đọng (Chưa chi)</div>
+          <div className="stat-value text-red">{tienChuaChi.toLocaleString()}đ</div>
+          <div className="stat-sub">Đang chờ Ký duyệt / Xuất quỹ</div>
         </div>
-        <div className="stat-card card-red" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", border: "1px solid rgba(248, 113, 113, 0.3)", padding: "20px", borderRadius: "12px" }}>
-          <div className="stat-label" style={{ color: "#94a3b8" }}>
-            Công Nợ Tồn Đọng (Chưa chi)
-          </div>
-          <div className="stat-value" style={{ color: "#f87171", fontSize: "24px", fontWeight: "bold", margin: "10px 0" }}>
-            {tienChuaChi.toLocaleString()}đ
-          </div>
-          <div className="stat-sub" style={{ color: "#64748b", fontSize: "13px" }}>
-            Đang chờ Ký duyệt / Xuất quỹ
-          </div>
-        </div>
-        <div className="stat-card card-yellow" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", border: "1px solid rgba(250, 204, 21, 0.3)", padding: "20px", borderRadius: "12px" }}>
-          <div className="stat-label" style={{ color: "#94a3b8" }}>
-            Tổng Thuế Thu Hộ (TNCN)
-          </div>
-          <div className="stat-value" style={{ color: "#facc15", fontSize: "24px", fontWeight: "bold", margin: "10px 0" }}>
-            {tongThue.toLocaleString()}đ
-          </div>
-          <div className="stat-sub" style={{ color: "#64748b", fontSize: "13px" }}>
-            Tạm giữ để nộp ngân sách
-          </div>
+
+        <div className="stat-card card-yellow">
+          <div className="stat-label">Tổng Thuế Thu Hộ (TNCN)</div>
+          <div className="stat-value text-yellow">{tongThue.toLocaleString()}đ</div>
+          <div className="stat-sub">Tạm giữ để nộp ngân sách</div>
         </div>
       </div>
 
-      {/* Thanh tiến độ giải ngân */}
-      <div className="progress-section" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", marginTop: "20px", border: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="progress-header" style={{ display: "flex", justifyContent: "space-between", color: "#e2e8f0", fontWeight: "bold", marginBottom: "10px" }}>
+      {/* THANH TIẾN ĐỘ */}
+      <div className="progress-section">
+        <div className="progress-header">
           <span>Tiến độ Giải Ngân Quỹ Nhuận Bút</span>
-          <span style={{ color: "#34d399", fontSize: "18px" }}>{tyLeGiaiNgan}%</span>
+          <span className="progress-percent text-green">{tyLeGiaiNgan}%</span>
         </div>
-        <div className="progress-bar-bg" style={{ backgroundColor: "#0f172a", height: "20px", borderRadius: "10px", overflow: "hidden" }}>
-          <div
-            className="progress-bar-fill"
-            style={{
-              width: `${tyLeGiaiNgan}%`,
-              backgroundColor: "#10b981",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: "bold",
-              transition: "width 1s ease-in-out",
-            }}
-          >
+        <div className="progress-bar-bg">
+          <div className="progress-bar-fill" style={{ width: `${tyLeGiaiNgan}%` }}>
             {tyLeGiaiNgan > 5 && `${tyLeGiaiNgan}%`}
           </div>
         </div>
       </div>
 
-      {/* Lưới 3 Biểu đồ trực quan */}
-      <div className="section-charts" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
-        <div className="chart-card" style={{ gridColumn: "1 / -1", backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            Số tiền Nhuận bút chi cho mỗi Kỳ Báo
-          </h3>
-          <div style={{ height: "300px" }}>
+      {/* BIỂU ĐỒ TRỰC QUAN */}
+      <div className="section-charts">
+        <div className="chart-card chart-full">
+          <h3 className="chart-title">Số tiền Nhuận bút chi cho mỗi Kỳ Báo</h3>
+          <div className="chart-wrapper-large">
             <Bar
               data={barDataIssue}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { grid: { color: "rgba(255,255,255,0.05)" } }, x: { grid: { display: false } } },
+                scales: { y: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } }, x: { grid: { display: false }, ticks: { color: chartTextColor } } },
               }}
             />
           </div>
         </div>
 
-        <div className="chart-card" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            Cơ cấu Trạng Thái Xử Lý
-          </h3>
-          <div style={{ height: "250px", display: "flex", justifyContent: "center" }}>
-            <Pie data={pieData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { color: "#94a3b8", font: { size: 13 } } } } }} />
+        <div className="chart-card">
+          <h3 className="chart-title">Cơ cấu Trạng Thái Xử Lý</h3>
+          <div className="chart-wrapper-small">
+            <Pie data={pieData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { color: chartTextColor, font: { size: 13 } } } } }} />
           </div>
         </div>
 
-        <div className="chart-card" style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <h3 className="chart-title" style={{ color: "#e2e8f0", marginTop: 0 }}>
-            Hoạt Động Theo Khu Vực
-          </h3>
-          <div style={{ height: "250px" }}>
+        <div className="chart-card">
+          <h3 className="chart-title">Hoạt Động Theo Khu Vực</h3>
+          <div className="chart-wrapper-small">
             <Bar
               data={barDataRegion}
               options={{
                 indexAxis: "y",
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: "top", labels: { color: "#94a3b8", font: { size: 12 } } } },
-                scales: { x: { grid: { color: "rgba(255,255,255,0.05)" } }, y: { grid: { display: false } } },
+                plugins: { legend: { position: "top", labels: { color: chartTextColor, font: { size: 12 } } } },
+                scales: { x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } }, y: { grid: { display: false }, ticks: { color: chartTextColor } } },
               }}
             />
           </div>
         </div>
       </div>
-      {/* Bảng phân tích hồ sơ chi tiết */}
-      <div className="progress-section" style={{ marginBottom: "0" }}>
-        <h3 style={{ color: "#e2e8f0", marginTop: "0", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>Phân Tích Hồ Sơ Nhanh</h3>
+
+      {/* BẢNG CHI TIẾT NHANH */}
+      <div className="progress-section no-margin-bottom">
+        <h3 className="chart-title border-bottom">Phân Tích Hồ Sơ Nhanh</h3>
         <table className="mini-table">
           <thead>
             <tr>
@@ -311,31 +273,31 @@ function ThongKe() {
           <tbody>
             <tr>
               <td>
-                <span style={{ color: "#facc15", fontWeight: "bold" }}>● Chờ duyệt (Mới nhập liệu)</span>
+                <span className="dot-yellow">●</span> Chờ duyệt (Mới nhập liệu)
               </td>
-              <td style={{ fontWeight: "bold" }}>{demTrangThai["Chờ duyệt"] || 0} bài</td>
-              <td style={{ color: "#94a3b8" }}>Nằm tại Phòng Thư Ký</td>
+              <td className="bold-text">{demTrangThai["Chờ duyệt"] || 0} bài</td>
+              <td className="text-subtle">Nằm tại Phòng Thư Ký</td>
             </tr>
             <tr>
               <td>
-                <span style={{ color: "#3b82f6", fontWeight: "bold" }}>● Trình Lãnh Đạo</span>
+                <span className="dot-blue">●</span> Trình Lãnh Đạo
               </td>
-              <td style={{ fontWeight: "bold" }}>{demTrangThai["Trình Lãnh Đạo"] || 0} bài</td>
-              <td style={{ color: "#94a3b8" }}>Chờ Giám đốc phê duyệt chi</td>
+              <td className="bold-text">{demTrangThai["Trình Lãnh Đạo"] || 0} bài</td>
+              <td className="text-subtle">Chờ Giám đốc phê duyệt chi</td>
             </tr>
             <tr>
               <td>
-                <span style={{ color: "#10b981", fontWeight: "bold" }}>● Đã duyệt (Chờ xuất tiền)</span>
+                <span className="dot-green">●</span> Đã duyệt (Chờ xuất tiền)
               </td>
-              <td style={{ fontWeight: "bold" }}>{demTrangThai["Đã duyệt"] || 0} bài</td>
-              <td style={{ color: "#94a3b8" }}>Nằm tại Phòng Kế toán</td>
+              <td className="bold-text">{demTrangThai["Đã duyệt"] || 0} bài</td>
+              <td className="text-subtle">Nằm tại Phòng Kế toán</td>
             </tr>
             <tr>
               <td>
-                <span style={{ color: "#a855f7", fontWeight: "bold" }}>● Đã thanh toán (Hoàn tất)</span>
+                <span className="dot-purple">●</span> Đã thanh toán (Hoàn tất)
               </td>
-              <td style={{ fontWeight: "bold", color: "#34d399" }}>{demTrangThai["Đã thanh toán"] || 0} bài</td>
-              <td style={{ color: "#34d399" }}>Tiền đã vào tài khoản Tác giả</td>
+              <td className="bold-text text-green">{demTrangThai["Đã thanh toán"] || 0} bài</td>
+              <td className="text-green">Tiền đã vào tài khoản Tác giả</td>
             </tr>
           </tbody>
         </table>
